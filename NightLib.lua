@@ -7,7 +7,7 @@ function NightlyUI:CreateBaseUI()
     ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
     -- Main Frame
-    local MainFrame = Instance.new("Frame") -- Fixed capitalization
+    local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
@@ -16,15 +16,15 @@ function NightlyUI:CreateBaseUI()
     MainFrame.Position = UDim2.new(0.3438, 0, 0.0577, 0)
     MainFrame.Size = UDim2.new(0, 417, 0, 612)
     
-    -- Add UI Gradient
-    local UIGradient = Instance.new("UIGradient")
-    UIGradient.Color = ColorSequence.new{
+    -- Add UI Gradient to MainFrame
+    local MainFrameGradient = Instance.new("UIGradient")
+    MainFrameGradient.Color = ColorSequence.new{
         ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 255)),
         ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)),
         ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)),
         ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
     }
-    UIGradient.Parent = MainFrame
+    MainFrameGradient.Parent = MainFrame
 
     -- Title TextLabel
     local TextLabel = Instance.new("TextLabel")
@@ -40,6 +40,17 @@ function NightlyUI:CreateBaseUI()
     TextLabel.TextSize = 14
     TextLabel.TextWrapped = true
 
+    -- Add UI Gradient to TextLabel
+    local TextLabelGradient = Instance.new("UIGradient")
+    TextLabelGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(0.51, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+    }
+    TextLabelGradient.Parent = TextLabel
+
     -- Tabs Frame
     local TabsFrame = Instance.new("Frame")
     TabsFrame.Name = "TabsFrame"
@@ -49,6 +60,16 @@ function NightlyUI:CreateBaseUI()
     TabsFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
     TabsFrame.Position = UDim2.new(0, 0, 0.0294, 0)
     TabsFrame.Size = UDim2.new(0, 417, 0, 29)
+
+    -- Add UI Gradient to TabsFrame
+    local TabsFrameGradient = Instance.new("UIGradient")
+    TabsFrameGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+    }
+    TabsFrameGradient.Parent = TabsFrame
 
     local UIListLayout = Instance.new("UIListLayout")
     UIListLayout.Parent = TabsFrame
@@ -64,6 +85,16 @@ function NightlyUI:CreateBaseUI()
     ContentBackgroundFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
     ContentBackgroundFrame.Position = UDim2.new(0.024, 0, 0.098, 0)
     ContentBackgroundFrame.Size = UDim2.new(0, 398, 0, 541)
+
+    -- Add UI Gradient to ContentBackgroundFrame
+    local ContentBackgroundFrameGradient = Instance.new("UIGradient")
+    ContentBackgroundFrameGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 255)),
+        ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+    }
+    ContentBackgroundFrameGradient.Parent = ContentBackgroundFrame
 
     -- Save references for later use
     self.ScreenGui = ScreenGui
