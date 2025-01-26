@@ -71,6 +71,7 @@ function NightlyUI:CreateBaseUI()
     }
     TabsFrameGradient.Parent = TabsFrame
 
+    -- Add UIListLayout to TabsFrame
     local UIListLayout = Instance.new("UIListLayout")
     UIListLayout.Parent = TabsFrame
     UIListLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -104,7 +105,7 @@ function NightlyUI:CreateBaseUI()
 end
 
 -- Tab Creation
-function NightlyUI:CreateTab(tabName)
+function NightlyUI:CreateTab(tabName, content)
     local button = Instance.new("TextButton")
     button.Name = tabName .. "Button"
     button.Parent = self.TabsFrame -- Correctly parented to the TabsFrame
@@ -116,19 +117,48 @@ function NightlyUI:CreateTab(tabName)
     button.TextSize = 14
     button.Text = tabName
 
-    -- Add interactivity
-    button.MouseEnter:Connect(function()
-        button.TextColor3 = Color3.fromRGB(112, 10, 240)
-    end)
-    button.MouseLeave:Connect(function()
-        button.TextColor3 = Color3.fromRGB(255, 0, 255)
+    -- Content for the tab
+    local tabContentFrame = Instance.new("Frame")
+    tabContentFrame.Name = tabName .. "Content"
+    tabContentFrame.Parent = self.ContentFrame
+    tabContentFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    tabContentFrame.Size = UDim2.new(1, 0, 1, 0)
+    tabContentFrame.Visible = false
+    tabContentFrame.BackgroundTransparency = 0.1
+    tabContentFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    
+    -- Add the custom content (e.g., labels, buttons)
+    local customContent = content(tabContentFrame)
+
+    -- Add interactivity to tab button
+    button.MouseButton1Click:Connect(function()
+        -- Hide all other content
+        for _, frame in pairs(self.ContentFrame:GetChildren()) do
+            if frame:IsA("Frame") then
+                frame.Visible = false
+            end
+        end
+        -- Show the clicked tab's content
+        tabContentFrame.Visible = true
     end)
 
     return button
 end
 
--- Initialize UI
+-- Example usage
 NightlyUI:CreateBaseUI()
+
+-- Create Settings Tab with content
+NightlyUI:CreateTab("Settings", function(parentFrame)
+    -- Add custom elements for Settings tab here
+    local label = Instance.new("TextLabel")
+    label.Parent = parentFrame
+    label.Text = "Settings Content"
+    label.Size = UDim2.new(0, 200, 0, 30)
+    label.Position = UDim2.new(0.5, -100, 0.5, -15)
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextScaled = true
+end)
 
 -- Return Library
 return NightlyUI
