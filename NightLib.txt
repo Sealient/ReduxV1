@@ -1,117 +1,93 @@
-local MyUI = {}
+-- Load the library
+local NightLib = loadstring(game:HttpGet("your-github-ui-code-link"))()
 
--- Main UI Components
-function MyUI:CreateUI()
+-- Initialize the UI
+local NightlyUI = {}
+
+-- Create Base UI Outline
+function NightlyUI:CreateBaseUI()
+    -- StarterGui Setup
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "MyHackUI"
-    ScreenGui.Parent = game:GetService("CoreGui")
-    
-    local MainFrame = Instance.new("Frame", ScreenGui)
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Main Frame
+    local mainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
-    MainFrame.Size = UDim2.new(0, 500, 0, 300)
-    MainFrame.Position = UDim2.new(0.5, -250, 0.5, -150)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    MainFrame.Parent = ScreenGui
+    MainFrame.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
+    MainFrame.BackgroundTransparency = 0.100
+    MainFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    MainFrame.Position = UDim2.new(0.343820214, 0, 0.0577200577, 0)
+    MainFrame.Size = UDim2.new(0, 417, 0, 612)
     
-    local UIGradient = Instance.new("UIGradient", MainFrame)
-    UIGradient.Color = ColorSequence.new(Color3.fromRGB(45, 45, 45), Color3.fromRGB(25, 25, 25))
+    -- Add UI Gradient
+    local uiGradient = Instance.new("UIGradient")
+    UIGradient_2.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 255))}
+    UIGradient_2.Parent = MainFrame
     
-    -- Enable Dragging
-    local dragging
-    local dragInput
-    local dragStart
-    local startPos
+    -- Title TextLabel    
+    local TextLabel = Instance.new("TextLabel")
+    TextLabel.Parent = MainFrame
+    TextLabel.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
+    TextLabel.BackgroundTransparency = 0.100
+    TextLabel.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    TextLabel.Size = UDim2.new(0, 417, 0, 18)
+    TextLabel.Font = Enum.Font.SourceSans
+    TextLabel.Text = "N     I     G     H     T     L     Y"
+    TextLabel.TextColor3 = Color3.fromRGB(255, 0, 255)
+    TextLabel.TextScaled = true
+    TextLabel.TextSize = 14.000
+    TextLabel.TextWrapped = true
+    
+    local UIGradient = Instance.new("UIGradient")
+    UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.51, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 255))}
+    UIGradient.Parent = TextLabel
 
-    MainFrame.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            dragging = true
-            dragStart = input.Position
-            startPos = MainFrame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
-        end
-    end)
-
-    MainFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement then
-            dragInput = input
-        end
-    end)
-
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            local delta = input.Position - dragStart
-            MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        end
-    end)
-
-    -- Tabs Container
-    local TabsFrame = Instance.new("Frame", MainFrame)
+    -- Tabs Frame
+    local TabsFrame = Instance.new("Frame")
     TabsFrame.Name = "TabsFrame"
-    TabsFrame.Size = UDim2.new(0, 100, 1, 0)
-    TabsFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-
-    local ContentBackgroundFrame = Instance.new("Frame", MainFrame)
+    TabsFrame.Parent = MainFrame
+    TabsFrame.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+    TabsFrame.BackgroundTransparency = 0.100
+    TabsFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    TabsFrame.Position = UDim2.new(0, 0, 0.0294117648, 0)
+    TabsFrame.Size = UDim2.new(0, 417, 0, 29)
+    
+    UIListLayout.Parent = TabsFrame
+    UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    
+    local UIGradient_3 = Instance.new("UIGradient")
+    UIGradient_3.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 255))}
+    UIGradient_3.Parent = TabsFrame
+    
+    -- Content Background Frame
+    local contentBackgroundFrame = Instance.new("Frame")
     ContentBackgroundFrame.Name = "ContentBackgroundFrame"
-    ContentBackgroundFrame.Position = UDim2.new(0, 100, 0, 0)
-    ContentBackgroundFrame.Size = UDim2.new(1, -100, 1, 0)
-    ContentBackgroundFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-
-    self.MainFrame = MainFrame
-    self.TabsFrame = TabsFrame
-    self.ContentFrame = ContentBackgroundFrame
-    self.Tabs = {}
-
-    return self
-end
-
--- Add a Tab
-function MyUI:CreateTab(name)
-    local Button = Instance.new("TextButton", self.TabsFrame)
-    Button.Size = UDim2.new(1, 0, 0, 50)
-    Button.Text = name
-    Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-
-    local ContentFrame = Instance.new("Frame", self.ContentFrame)
-    ContentFrame.Size = UDim2.new(1, 0, 1, 0)
-    ContentFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-    ContentFrame.Visible = false
-
-    Button.MouseButton1Click:Connect(function()
-        for _, tab in pairs(self.Tabs) do
-            tab.ContentFrame.Visible = false
-        end
-        ContentFrame.Visible = true
-    end)
-
-    table.insert(self.Tabs, { Button = Button, ContentFrame = ContentFrame })
-
+    ContentBackgroundFrame.Parent = MainFrame
+    ContentBackgroundFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+    ContentBackgroundFrame.BackgroundTransparency = 0.100
+    ContentBackgroundFrame.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    ContentBackgroundFrame.Position = UDim2.new(0.023980815, 0, 0.0980392173, 0)
+    ContentBackgroundFrame.Size = UDim2.new(0, 398, 0, 541)
+    
+    local UIGradient_4 = Instance.new("UIGradient")
+    UIGradient_4.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(255, 0, 255)), ColorSequenceKeypoint.new(0.24, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(0.79, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255, 0, 255))}
+    UIGradient_4.Parent = ContentBackgroundFrame
+    
     return {
-        CreateSection = function(sectionName)
-            local Section = Instance.new("Frame", ContentFrame)
-            Section.Size = UDim2.new(1, 0, 0, 100)
-            Section.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
-
-            local SectionTitle = Instance.new("TextLabel", Section)
-            SectionTitle.Text = sectionName
-            SectionTitle.Size = UDim2.new(1, 0, 0, 20)
-
-            return {
-                CreateToggle = function(toggleName, defaultState, callback)
-                    local ToggleButton = Instance.new("TextButton", Section)
-                    ToggleButton.Size = UDim2.new(0, 100, 0, 30)
-                    ToggleButton.Text = toggleName
-                    ToggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-                    ToggleButton.MouseButton1Click:Connect(function()
-                        defaultState = not defaultState
-                        callback(defaultState)
-                    end)
-                end
-            }
-        end
+        ScreenGui = screenGui,
+        MainFrame = mainFrame,
+        TabsFrame = tabsFrame,
+        ContentBackgroundFrame = contentBackgroundFrame,
     }
 end
 
-return MyUI
+-- Initialize the Base UI
+local uiElements = NightlyUI:CreateBaseUI() 
+
+-- Export `NightlyUI` for dynamic tabs, sections, toggles 
+return NightlyUI 
+
+
+that should be the base ui without elemnts, or anything.
