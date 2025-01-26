@@ -145,6 +145,106 @@ function NightlyUI:CreateTab(tabName, content)
     return button
 end
 
+function NightlyUI:CreateToggle(parentFrame, position, size)
+    -- Create the ToggleFrame
+    local ToggleFrame = Instance.new("Frame")
+    ToggleFrame.Parent = parentFrame
+    ToggleFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    ToggleFrame.BackgroundTransparency = 1.000
+    ToggleFrame.Position = position or UDim2.new(0, 0, 0, 0) -- Default to (0,0)
+    ToggleFrame.Size = size or UDim2.new(0, 33, 0, 19) -- Default size
+    
+    -- Inactive state
+    local Inactive = Instance.new("TextButton")
+    Inactive.Name = "Inactive"
+    Inactive.Parent = ToggleFrame
+    Inactive.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+    Inactive.BackgroundTransparency = 0.100
+    Inactive.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Inactive.BorderSizePixel = 0
+    Inactive.Size = UDim2.new(0, 33, 0, 19)
+    Inactive.Font = Enum.Font.SourceSans
+    Inactive.Text = ""
+    Inactive.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Inactive.TextSize = 14.000
+    
+    local UICorner_1 = Instance.new("UICorner")
+    UICorner_1.CornerRadius = UDim.new(0, 1)
+    UICorner_1.Parent = Inactive
+    
+    local Knob = Instance.new("Frame")
+    Knob.Name = "Knob"
+    Knob.Parent = Inactive
+    Knob.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Knob.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    Knob.BorderSizePixel = 0
+    Knob.Size = UDim2.new(0, 12, 0, 14)
+    
+    local UICorner_2 = Instance.new("UICorner")
+    UICorner_2.CornerRadius = UDim.new(0, 0)
+    UICorner_2.Parent = Knob
+    
+    -- Active state
+    local Active = Instance.new("TextButton")
+    Active.Name = "Active"
+    Active.Parent = ToggleFrame
+    Active.BackgroundColor3 = Color3.fromRGB(39, 39, 39)
+    Active.BackgroundTransparency = 0.100
+    Active.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Active.BorderSizePixel = 0
+    Active.Size = UDim2.new(0, 33, 0, 19)
+    Active.Font = Enum.Font.SourceSans
+    Active.Text = ""
+    Active.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Active.TextSize = 14.000
+    
+    local UICorner_3 = Instance.new("UICorner")
+    UICorner_3.CornerRadius = UDim.new(0, 1)
+    UICorner_3.Parent = Active
+    
+    local Knob_2 = Instance.new("Frame")
+    Knob_2.Name = "Knob"
+    Knob_2.Parent = Active
+    Knob_2.BackgroundColor3 = Color3.fromRGB(112, 10, 240)
+    Knob_2.BorderColor3 = Color3.fromRGB(112, 10, 240)
+    Knob_2.BorderSizePixel = 0
+    Knob_2.Size = UDim2.new(0, 12, 0, 14)
+    
+    local UICorner_4 = Instance.new("UICorner")
+    UICorner_4.CornerRadius = UDim.new(0, 0)
+    UICorner_4.Parent = Knob_2
+
+    -- Logic to toggle between Active/Inactive states
+    local function toggle()
+        if Inactive.Visible then
+            -- If Inactive is visible, switch to Active
+            Inactive.Visible = false
+            Active.Visible = true
+        else
+            -- If Active is visible, switch to Inactive
+            Inactive.Visible = true
+            Active.Visible = false
+        end
+    end
+    
+    -- Initial state setup (Inactive is visible initially)
+    Inactive.Visible = true
+    Active.Visible = false
+    
+    -- Listen for mouse click to toggle the states
+    Inactive.MouseButton1Click:Connect(toggle)
+    Active.MouseButton1Click:Connect(toggle)
+
+    -- Return the ToggleFrame in case you need it later
+    return ToggleFrame
+end
+
+-- Create a Toggle inside a specific frame
+local parentFrame = NightlyUI.ContentFrame -- You can specify your target parent frame
+local togglePosition = UDim2.new(0.206, 0, 0, 0)
+local toggleSize = UDim2.new(0, 33, 0, 19)
+NightlyUI:CreateToggle(parentFrame, togglePosition, toggleSize)
+
 -- Example usage
 NightlyUI:CreateBaseUI()
 
