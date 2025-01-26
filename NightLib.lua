@@ -7,7 +7,7 @@ function NightlyUI:CreateBaseUI()
     ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
     -- Main Frame
-    local mainFrame = Instance.new("Frame")
+    local MainFrame = Instance.new("Frame")
     MainFrame.Name = "MainFrame"
     MainFrame.Parent = ScreenGui
     MainFrame.BackgroundColor3 = Color3.fromRGB(48, 48, 48)
@@ -58,7 +58,7 @@ function NightlyUI:CreateBaseUI()
     UIGradient_3.Parent = TabsFrame
 
     -- Content Background Frame
-    local contentBackgroundFrame = Instance.new("Frame")
+    local ContentBackgroundFrame = Instance.new("Frame")
     ContentBackgroundFrame.Name = "ContentBackgroundFrame"
     ContentBackgroundFrame.Parent = MainFrame
     ContentBackgroundFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
