@@ -97,6 +97,12 @@ function NightlyUI:CreateBaseUI()
     }
     ContentBackgroundFrameGradient.Parent = ContentBackgroundFrame
 
+        -- Add UIListLayout to TabsFrame
+    local UIListLayout = Instance.new("UIListLayout")
+    UIListLayout.Parent = ContentBackgroundFrame
+    UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
     -- Save references for later use
     self.ScreenGui = ScreenGui
     self.MainFrame = MainFrame
