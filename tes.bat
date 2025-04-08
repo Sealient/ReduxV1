@@ -41,12 +41,8 @@ if "%local_version%" == "%remote_version%" (
     exit
 )
 
-:: Main menu
-:mainMenu
-echo This is the main menu
 echo Local version: %local_version%
 pause
-exit /b
 
 :: Get system info
 for /f "tokens=2 delims==" %%i in ('wmic computersystem get name /value') do set "PC_NAME=%%i"
