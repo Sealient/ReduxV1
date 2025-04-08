@@ -4,33 +4,49 @@ title 🛠️ Windows Optimization Center - Sealient Edition
 color 0A
 mode con: cols=90 lines=35
 
-:: Define the URL of the remote version file and script
-set version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt
-set script_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat
-set local_version=2.0.0
+@echo off
+setlocal enabledelayedexpansion
 
-:: Download the remote version number using PowerShell
-for /f "delims=" %%i in ('powershell -Command "(Invoke-WebRequest -Uri %version_url%).Content.Trim()"') do set remote_version=%%i
+:: Define versions and URLs
+set "local_version=2.0.0"
+set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
+set "script_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat"
 
-:: Compare local and remote versions
-if "%local_version%"=="%remote_version%" (
-    echo Local version is up-to-date.
+:: Get remote version (simplified approach)
+powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%version_url%', '%TEMP%\version.txt')"
+set /p remote_version=<"%TEMP%\version.txt"
+del "%TEMP%\version.txt"
+
+echo Local version: %local_version%
+echo Remote version: %remote_version%
+
+:: Compare versions (simplified comparison)
+if "%local_version%" == "%remote_version%" (
+    echo You have the latest version.
 ) else (
-    echo A new version (%remote_version%) is available!
-    echo Updating to the latest version...
-
-    :: Download and replace the script
-    powershell -Command "Invoke-WebRequest -Uri %script_url% -OutFile \"%~f0\""
-
-    :: Notify the user
-    echo Update complete. Please run the updated script again.
-    pause
+    echo Update available! Downloading new version...
+    powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%script_url%', '%~dpn0_new.bat')"
+    echo Update downloaded. Replacing old version...
+    
+    :: Create an update bridge script that will replace the file and run the new version
+    echo @echo off > "%TEMP%\update_bridge.bat"
+    echo timeout /t 1 >> "%TEMP%\update_bridge.bat"
+    echo copy /y "%~dpn0_new.bat" "%~f0" >> "%TEMP%\update_bridge.bat"
+    echo del "%~dpn0_new.bat" >> "%TEMP%\update_bridge.bat"
+    echo start "" "%~f0" >> "%TEMP%\update_bridge.bat"
+    echo exit >> "%TEMP%\update_bridge.bat"
+    
+    :: Run the update bridge and exit
+    start "" "%TEMP%\update_bridge.bat"
     exit
 )
 
-:: If no update, continue with the main script
-goto mainMenu
-
+:: Main menu
+:mainMenu
+echo This is the main menu
+echo Local version: %local_version%
+pause
+exit /b
 
 :: Get system info
 for /f "tokens=2 delims==" %%i in ('wmic computersystem get name /value') do set "PC_NAME=%%i"
