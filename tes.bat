@@ -6,7 +6,7 @@ mode con: cols=90 lines=35
 
 :: Define the URL of the remote version file and script
 set version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt
-set script_url=https://example.com/your-bat-script.bat
+set script_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat
 set local_version=2.0.0
 
 :: Download the remote version number using PowerShell
