@@ -8,7 +8,7 @@ mode con: cols=90 lines=35
 setlocal enabledelayedexpansion
 
 :: Define versions and URLs
-set "local_version=2.0.0"
+set "local_version=2.1.0"
 set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
 set "script_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat"
 
@@ -85,11 +85,10 @@ if "%opt%"=="7" goto securityEnhancements
 if "%opt%"=="0" exit
 goto mainMenu
 
-:systemOpt
+:systemOptimization
 cls
-echo.
 echo ╔══════════════════════════════════════════════════════╗
-echo ║             SYSTEM OPTIMIZATION MODULE               ║
+echo ║            SYSTEM OPTIMIZATION MODULE               ║
 echo ╚══════════════════════════════════════════════════════╝
 echo.
 echo [1] Clear Temporary Files
@@ -98,22 +97,23 @@ echo [3] System File Check (SFC)
 echo [4] Disk Check (CHKDSK)
 echo [5] Optimize Startup
 echo [6] Update Windows
-echo [7] Clean Registry (built-in cleanup)
+echo [7] Clean Registry
 echo [8] Power Plan Optimization
 echo [9] Back to Main Menu
 echo.
-set /p soopt=Enter your choice: 
+set /p opt=Enter your choice: 
 
-if "%soopt%"=="1" goto clearTemp
-if "%soopt%"=="2" goto defrag
-if "%soopt%"=="3" goto sfc
-if "%soopt%"=="4" goto chkdsk
-if "%soopt%"=="5" goto startup
-if "%soopt%"=="6" goto update
-if "%soopt%"=="7" goto cleanRegistry
-if "%soopt%"=="8" goto powerPlan
-if "%soopt%"=="9" goto mainMenu
-goto systemOpt
+if "%opt%"=="1" goto clearTempFiles
+if "%opt%"=="2" goto defragmentDrives
+if "%opt%"=="3" goto systemFileCheck
+if "%opt%"=="4" goto diskCheck
+if "%opt%"=="5" goto optimizeStartup
+if "%opt%"=="6" goto updateWindows
+if "%opt%"=="7" goto cleanRegistry
+if "%opt%"=="8" goto powerPlanOptimization
+if "%opt%"=="9" goto mainMenu
+goto systemOptimization
+
 
 :diskCleanup
 cls
@@ -141,44 +141,249 @@ goto diskCleanup
 :: ===== SYSTEM OPT FUNCTIONS ===
 :: ===============================
 
-:clearTemp
+:clearTempFiles
 cls
-echo 🧹 Clearing temporary files...
-del /q /f /s %TEMP%\*
-del /q /f /s C:\Windows\Temp\*
-echo ✅ Done!
-pause
-goto systemOpt
+echo 🧹 Clearing Temporary Files...
+echo.
+echo [1] Clear Windows Temp Files
+echo [2] Clear Browser Cache
+echo [3] Clear System Caches (Pre-fetch, etc.)
+echo [4] Clear All
+echo [5] Back to System Optimization Menu
+set /p tempOpt=Enter your choice: 
 
-:defrag
-cls
-echo 🔄 Defragmenting C: drive...
-defrag C: /U /V
-echo ✅ Done!
-pause
-goto systemOpt
+if "%tempOpt%"=="1" goto clearWindowsTemp
+if "%tempOpt%"=="2" goto clearBrowserCache
+if "%tempOpt%"=="3" goto clearSystemCaches
+if "%tempOpt%"=="4" goto clearAllTemp
+if "%tempOpt%"=="5" goto systemOptimization
+goto clearTempFiles
 
-:sfc
+:clearWindowsTemp
+echo Clearing Windows Temp...
+del /q /f %temp%\*
+echo ✅ Windows Temp files cleared.
+pause
+goto clearTempFiles
+
+:clearBrowserCache
 cls
-echo 🧰 Running System File Checker...
+echo 🧹 Clearing Browser Cache...
+echo.
+echo [1] Clear Chrome Browser Cache
+echo [2] Clear Firefox Browser Cache
+echo [3] Clear Edge Browser Cache
+echo [4] Clear Opera Browser Cache
+echo [5] Clear Internet Explorer Cache
+echo [6] Clear All Browsers' Cache
+echo [7] Back to System Optimization Menu
+set /p browserOpt=Enter your choice: 
+
+if "%browserOpt%"=="1" goto clearChromeCache
+if "%browserOpt%"=="2" goto clearFirefoxCache
+if "%browserOpt%"=="3" goto clearEdgeCache
+if "%browserOpt%"=="4" goto clearOperaCache
+if "%browserOpt%"=="5" goto clearIECache
+if "%browserOpt%"=="6" goto clearAllBrowserCache
+if "%browserOpt%"=="7" goto systemOptimization
+goto clearBrowserCache
+
+:clearChromeCache
+echo Clearing Chrome Browser Cache...
+rd /s /q "%localappdata%\Google\Chrome\User Data\Default\Cache"
+rd /s /q "%localappdata%\Google\Chrome\User Data\Default\Media Cache"
+echo ✅ Chrome Browser Cache cleared.
+pause
+goto clearBrowserCache
+
+:clearFirefoxCache
+echo Clearing Firefox Browser Cache...
+rd /s /q "%appdata%\Mozilla\Firefox\Profiles\*\cache2"
+rd /s /q "%appdata%\Mozilla\Firefox\Profiles\*\cache"
+echo ✅ Firefox Browser Cache cleared.
+pause
+goto clearBrowserCache
+
+:clearEdgeCache
+echo Clearing Edge Browser Cache...
+rd /s /q "%localappdata%\Microsoft\Edge\User Data\Default\Cache"
+rd /s /q "%localappdata%\Microsoft\Edge\User Data\Default\Media Cache"
+echo ✅ Edge Browser Cache cleared.
+pause
+goto clearBrowserCache
+
+:clearOperaCache
+echo Clearing Opera Browser Cache...
+rd /s /q "%appdata%\Opera Software\Opera Stable\Cache"
+rd /s /q "%appdata%\Opera Software\Opera Stable\Media Cache"
+echo ✅ Opera Browser Cache cleared.
+pause
+goto clearBrowserCache
+
+:clearIECache
+echo Clearing Internet Explorer Cache...
+del /q /f "%localappdata%\Microsoft\Windows\INetCache\IE\*"
+echo ✅ Internet Explorer Cache cleared.
+pause
+goto clearBrowserCache
+
+:clearAllBrowserCache
+echo Clearing Cache for All Browsers...
+rd /s /q "%localappdata%\Google\Chrome\User Data\Default\Cache"
+rd /s /q "%localappdata%\Google\Chrome\User Data\Default\Media Cache"
+rd /s /q "%appdata%\Mozilla\Firefox\Profiles\*\cache2"
+rd /s /q "%appdata%\Mozilla\Firefox\Profiles\*\cache"
+rd /s /q "%localappdata%\Microsoft\Edge\User Data\Default\Cache"
+rd /s /q "%localappdata%\Microsoft\Edge\User Data\Default\Media Cache"
+rd /s /q "%appdata%\Opera Software\Opera Stable\Cache"
+rd /s /q "%appdata%\Opera Software\Opera Stable\Media Cache"
+del /q /f "%localappdata%\Microsoft\Windows\INetCache\IE\*"
+echo ✅ All Browser Caches cleared.
+pause
+goto clearBrowserCache
+
+:clearSystemCaches
+echo Clearing System Caches (Prefetch, etc.)...
+del /q /f C:\Windows\Prefetch\*
+echo ✅ System caches cleared.
+pause
+goto clearTempFiles
+
+:clearAllTemp
+echo Clearing All Temporary Files...
+del /q /f %temp%\*
+rd /s /q "%localappdata%\Google\Chrome\User Data\Default\Cache"
+del /q /f C:\Windows\Prefetch\*
+echo ✅ All temporary files cleared.
+pause
+goto clearTempFiles
+
+:defragmentDrives
+cls
+echo 📀 Defragmenting Drives...
+echo.
+echo [1] Defragment C: Drive
+echo [2] Defragment D: Drive
+echo [3] Defragment All Drives
+echo [4] Back to System Optimization Menu
+set /p fragOpt=Enter your choice: 
+
+if "%fragOpt%"=="1" goto defragC
+if "%fragOpt%"=="2" goto defragD
+if "%fragOpt%"=="3" goto defragAll
+if "%fragOpt%"=="4" goto systemOptimization
+goto defragmentDrives
+
+
+:defragC
+echo Defragmenting C: Drive...
+defrag C: /O
+echo ✅ C: Drive defragmented.
+pause
+goto defragmentDrives
+
+:defragD
+echo Defragmenting D: Drive...
+defrag D: /O
+echo ✅ D: Drive defragmented.
+pause
+goto defragmentDrives
+
+:defragAll
+echo Defragmenting All Drives...
+defrag C: /O
+defrag D: /O
+echo ✅ All drives defragmented.
+pause
+goto defragmentDrives
+
+
+:systemFileCheck
+cls
+echo 🛠 Running System File Check (SFC)...
 sfc /scannow
+echo ✅ System File Check complete.
 pause
-goto systemOpt
+goto systemOptimization
 
-:chkdsk
-cls
-echo 💽 Running CHKDSK (may require restart)...
-chkdsk C: /F
-pause
-goto systemOpt
 
-:startup
+:diskCheck
 cls
-echo 🚀 Opening Startup Folder...
-start shell:startup
-echo 🔧 Tip: Use Task Manager > Startup tab for full control.
+echo 🛠 Running Disk Check (CHKDSK)...
+echo.
+echo [1] Check C: Drive
+echo [2] Check D: Drive
+echo [3] Check All Drives
+echo [4] Back to System Optimization Menu
+set /p diskOpt=Enter your choice: 
+
+if "%diskOpt%"=="1" goto checkC
+if "%diskOpt%"=="2" goto checkD
+if "%diskOpt%"=="3" goto checkAll
+if "%diskOpt%"=="4" goto systemOptimization
+goto diskCheck
+
+:checkC
+echo Checking C: Drive for errors...
+chkdsk C: /f /r
+echo ✅ C: Drive check complete.
 pause
-goto systemOpt
+goto diskCheck
+
+:checkD
+echo Checking D: Drive for errors...
+chkdsk D: /f /r
+echo ✅ D: Drive check complete.
+pause
+goto diskCheck
+
+:checkAll
+echo Checking All Drives for errors...
+chkdsk C: /f /r
+chkdsk D: /f /r
+echo ✅ All drives checked.
+pause
+goto diskCheck
+
+:optimizeStartup
+cls
+echo 🚀 Optimizing Startup...
+echo.
+echo [1] View Startup Programs
+echo [2] Disable Startup Program
+echo [3] Enable Startup Program
+echo [4] Back to System Optimization Menu
+set /p startupOpt=Enter your choice: 
+
+if "%startupOpt%"=="1" goto viewStartupPrograms
+if "%startupOpt%"=="2" goto disableStartupProgram
+if "%startupOpt%"=="3" goto enableStartupProgram
+if "%startupOpt%"=="4" goto systemOptimization
+goto optimizeStartup
+
+:viewStartupPrograms
+echo Viewing Startup Programs...
+start msconfig
+pause
+goto optimizeStartup
+
+:disableStartupProgram
+echo Enter the name of the program to disable:
+set /p prog=Program Name: 
+echo Disabling %prog%...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "%prog%" /t REG_SZ /f
+echo ✅ %prog% disabled at startup.
+pause
+goto optimizeStartup
+
+:enableStartupProgram
+echo Enter the name of the program to enable:
+set /p prog=Program Name: 
+echo Enabling %prog%...
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "%prog%" /f
+echo ✅ %prog% enabled at startup.
+pause
+goto optimizeStartup
 
 :update
 cls
@@ -189,19 +394,103 @@ goto systemOpt
 
 :cleanRegistry
 cls
-echo 🧼 Running basic registry cleanup...
-reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /va /f >nul 2>&1
-echo ✅ Registry startup keys cleared.
-pause
-goto systemOpt
+echo 🧹 Cleaning the Registry...
+echo.
+echo [1] Clean Unused File Extensions
+echo [2] Clean Empty Registry Keys
+echo [3] Clean Windows Installer Cache
+echo [4] Clean Old Windows Updates
+echo [5] Back to System Optimization Menu
+set /p regOpt=Enter your choice: 
 
-:powerPlan
-cls
-echo ⚡ Setting power plan to High Performance...
-powercfg -setactive SCHEME_MIN
-echo ✅ Power plan optimized.
+if "%regOpt%"=="1" goto cleanFileExtensions
+if "%regOpt%"=="2" goto cleanEmptyKeys
+if "%regOpt%"=="3" goto cleanInstallerCache
+if "%regOpt%"=="4" goto cleanWindowsUpdates
+if "%regOpt%"=="5" goto systemOptimization
+goto cleanRegistry
+
+:cleanFileExtensions
+echo Cleaning Unused File Extensions...
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts" /f
+echo ✅ Unused File Extensions cleaned.
 pause
-goto systemOpt
+goto cleanRegistry
+
+:cleanEmptyKeys
+echo Cleaning Empty Registry Keys...
+reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Uninstall" /f
+echo ✅ Empty Registry Keys cleaned.
+pause
+goto cleanRegistry
+
+:cleanInstallerCache
+echo Cleaning Windows Installer Cache...
+rd /s /q "C:\Windows\Installer"
+echo ✅ Windows Installer Cache cleaned.
+pause
+goto cleanRegistry
+
+:cleanWindowsUpdates
+echo Cleaning Old Windows Updates...
+rd /s /q "C:\Windows\SoftwareDistribution\Download"
+echo ✅ Old Windows Updates cleaned.
+pause
+goto cleanRegistry
+
+
+:powerPlanOptimization
+cls
+echo ⚡ Power Plan Optimization...
+echo.
+echo [1] Set High Performance Power Plan
+echo [2] Set Balanced Power Plan
+echo [3] Set Power Saver Plan
+echo [4] Restore Default Power Plan Settings
+echo [5] Back to System Optimization Menu
+set /p powerOpt=Enter your choice: 
+
+if "%powerOpt%"=="1" goto highPerformance
+if "%powerOpt%"=="2" goto balancedPower
+if "%powerOpt%"=="3" goto powerSaver
+if "%powerOpt%"=="4" goto restoreDefaultPower
+if "%powerOpt%"=="5" goto systemOptimization
+goto powerPlanOptimization
+
+:highPerformance
+echo Setting High Performance Power Plan...
+powercfg -change -standby-timeout-ac 0
+powercfg -change -monitor-timeout-ac 5
+powercfg -change -disk-timeout-ac 0
+echo ✅ High Performance Power Plan applied.
+pause
+goto powerPlanOptimization
+
+:balancedPower
+echo Setting Balanced Power Plan...
+powercfg -change -standby-timeout-ac 10
+powercfg -change -monitor-timeout-ac 10
+powercfg -change -disk-timeout-ac 10
+echo ✅ Balanced Power Plan applied.
+pause
+goto powerPlanOptimization
+
+:powerSaver
+echo Setting Power Saver Plan...
+powercfg -change -standby-timeout-ac 20
+powercfg -change -monitor-timeout-ac 15
+powercfg -change -disk-timeout-ac 20
+echo ✅ Power Saver Plan applied.
+pause
+goto powerPlanOptimization
+
+:restoreDefaultPower
+echo Restoring Default Power Plan Settings...
+powercfg -restoredefaultschemes
+echo ✅ Default Power Plan Settings restored.
+pause
+goto powerPlanOptimization
+
 
 :: ===============================
 :: ===== DISK CLEAN FUNCTIONS ===
@@ -821,7 +1110,7 @@ goto securityEnhancements
 :defenderSettings
 cls
 echo 🛡️ Configuring Windows Defender Settings...
-start ms-settings:defender
+start ms-settings:windowsdefender
 echo ✅ Windows Defender settings opened.
 pause
 goto securityEnhancements
@@ -837,7 +1126,7 @@ goto securityEnhancements
 :uacSettings
 cls
 echo ⚙️ Configuring User Account Control (UAC) settings...
-start ms-settings:uac
+start ms-settings:privacy
 echo ✅ UAC settings window opened.
 pause
 goto securityEnhancements
@@ -861,8 +1150,8 @@ goto securityEnhancements
 :securityAuditing
 cls
 echo 🕵️ Configuring Security Auditing and Event Log settings...
-start secpol.msc
-echo ✅ Security Auditing settings window opened.
+start eventvwr.msc
+echo ✅ Event Viewer opened for security auditing.
 pause
 goto securityEnhancements
 
@@ -881,4 +1170,5 @@ start ms-settings:ransomware-protection
 echo ✅ Ransomware protection settings window opened.
 pause
 goto securityEnhancements
+
 
