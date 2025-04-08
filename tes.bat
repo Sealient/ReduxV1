@@ -75,7 +75,7 @@ echo ╚════════════════════════
 echo.
 set /p opt=Choose an option: 
 
-if "%opt%"=="1" goto systemOpt
+if "%opt%"=="1" goto systemOptimization
 if "%opt%"=="2" goto diskCleanup
 if "%opt%"=="3" goto serviceMgmt
 if "%opt%"=="4" goto perfTweaks
