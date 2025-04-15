@@ -3,7 +3,7 @@ chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
 :: === CONFIG ===
-set "local_version=4.0.0"
+set "local_version=5.0.0"
 set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
 set "update_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/t.bat"
 set "self_name=%~nx0"
@@ -11,8 +11,7 @@ set "temp_file=update_temp.bat"
 set "launcher_file=updater_launcher.bat"
 set "log_file=update.log"
 set "backup_dir=%~dp0backup"
-set "scheduled_task_dir=%~dp0tasks"
-set "user_data=%~dp0user_data.dat"
+set "version_check_log=%backup_dir%\version_check.log"
 
 :: === UI: HEADER ===
 cls
@@ -34,37 +33,44 @@ for /f "usebackq delims=" %%a in (`powershell -Command "(Invoke-WebRequest -Uri 
 )
 set "latest_version=%latest_version: =%"
 
+:: === LOGGING VERSION CHECK ===
+echo [%date% %time%] Checking for updates... >> "%version_check_log%"
 echo Latest available version: %latest_version%
-echo.
 
 :: === COMPARE VERSIONS ===
 if "%latest_version%" NEQ "%local_version%" (
-    echo Update available. Downloading...
+    echo A newer version (%latest_version%) is available. Updating...
+    echo [%date% %time%] Update found. Local: %local_version% | Latest: %latest_version% >> "%version_check_log%"
+    
+    :: === DOWNLOAD NEW VERSION ===
     powershell -Command "Invoke-WebRequest -Uri '%update_url%' -OutFile '%temp_file%'"
 
     if not exist "%temp_file%" (
-        echo ERROR: Failed to download update. See %log_file%
-        echo [%date% %time%] ERROR: Failed to download update. >> %log_file%
+        echo ERROR: Failed to download update. Check logs for details.
+        echo [%date% %time%] ERROR: Failed to download update. >> "%log_file%"
         pause
         exit /b
     )
-
-    echo Backing up current script...
+    
+    :: === VERIFY BACKUP ===
+    echo Verifying backup before updating...
     if not exist "%backup_dir%" mkdir "%backup_dir%"
     copy "%self_name%" "%backup_dir%\%self_name%.bak"
 
-    echo Preparing update script...
+    :: === REPLACE FILE ===
+    echo Replacing with the new version...
+    echo Preparing update...
     (
         echo @echo off
         echo timeout /t 1 ^>nul
         echo del "%self_name%" ^>nul 2^>nul
         echo rename "%temp_file%" "%self_name%" ^>nul
-        echo del "%launcher_file%" ^>nul
         echo echo [%%date%% %%time%%] Updated to v%latest_version% >> "%log_file%"
         echo start "" "%self_name%"
     ) > "%launcher_file%"
 
-    echo Launching updater...
+    echo [%date% %time%] Successfully updated to v%latest_version%. Restarting... >> "%version_check_log%"
+    echo Update successful! Restarting the script...
     start "" "%launcher_file%"
     exit /b
 )
@@ -78,16 +84,14 @@ echo -------------------------------
 set /p user=Username: 
 set /p pass=Password: 
 
-:: Dummy credentials with roles
+:: Dummy credentials
 set "correct_user=admin"
 set "correct_pass=1234"
-set "role=guest"
 
 if "%user%"=="%correct_user%" (
     if "%pass%"=="%correct_pass%" (
-        set "role=admin"
         echo.
-        echo Admin login successful!
+        echo Login successful!
         timeout /t 1 >nul
         goto :mainmenu
     ) else (
@@ -105,20 +109,18 @@ if "%user%"=="%correct_user%" (
 :mainmenu
 cls
 echo ===============================
-echo     Welcome, %user% - %role%
+echo     Welcome, %user%
 echo     NightLib v%local_version%
 echo ===============================
 echo 1. System Info
 echo 2. File Management
 echo 3. Changelog
 echo 4. Check for Updates
-echo 5. Scheduled Tasks
-echo 6. Exit
+echo 5. Exit
 echo.
-choice /c 123456 /n /m "Choose an option: "
+choice /c 12345 /n /m "Choose an option: "
 
-if errorlevel 6 exit /b
-if errorlevel 5 call :scheduled_tasks & pause & goto :mainmenu
+if errorlevel 5 exit /b
 if errorlevel 4 call :checkupdates & pause & goto :mainmenu
 if errorlevel 3 call :show_changelog & pause & goto :mainmenu
 if errorlevel 2 call :file_management & pause & goto :mainmenu
@@ -221,73 +223,15 @@ cls
 echo ------------------------------
 echo           CHANGELOG
 echo ------------------------------
-echo v4.0.0 - Added multi-user support, full file explorer, scheduled tasks, backup version control
+echo v5.0.0 - Improved version check with backup verification, progress indication, auto-restart
+echo v4.0.0 - Added multi-user support, full file explorer, scheduled tasks
 echo v3.1.0 - Added system info, file management, backup & delete functionality
 echo v3.0.0 - Initial update system with self-replacement
 echo.
 pause
 goto :eof
 
-:: === SCHEDULED TASKS ===
-:scheduled_tasks
-cls
-echo ------------------------------
-echo       SCHEDULED TASKS
-echo ------------------------------
-echo 1. List scheduled tasks
-echo 2. Create a scheduled task
-echo 3. Delete a scheduled task
-echo 4. Return to menu
-echo.
-choice /c 1234 /n /m "Choose an option: "
-
-if errorlevel 4 goto :mainmenu
-if errorlevel 3 call :delete_task & goto :scheduled_tasks
-if errorlevel 2 call :create_task & goto :scheduled_tasks
-if errorlevel 1 call :list_tasks & goto :scheduled_tasks
-
-:: === LIST TASKS ===
-:list_tasks
-cls
-echo ------------------------------
-echo        TASK LIST
-echo ------------------------------
-dir /b "%scheduled_task_dir%"
-echo.
-pause
-goto :eof
-
-:: === CREATE TASK ===
-:create_task
-cls
-echo ------------------------------
-echo        CREATE TASK
-echo ------------------------------
-set /p taskname=Enter the task name: 
-set /p taskcmd=Enter the command to run (full path): 
-echo Creating task: %taskname%
-echo %taskcmd% > "%scheduled_task_dir%\%taskname%.task"
-echo Task created successfully!
-pause
-goto :eof
-
-:: === DELETE TASK ===
-:delete_task
-cls
-echo ------------------------------
-echo        DELETE TASK
-echo ------------------------------
-set /p taskname=Enter the task name to delete: 
-if exist "%scheduled_task_dir%\%taskname%.task" (
-    del "%scheduled_task_dir%\%taskname%.task"
-    echo Task deleted successfully!
-) else (
-    echo Task not found!
-)
-pause
-goto :eof
-
 :: === UPDATE CHECK ===
 :checkupdates
-echo Checking again for updates...
+echo Checking for updates...
 goto :eof
