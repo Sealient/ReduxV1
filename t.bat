@@ -5,7 +5,7 @@ setlocal EnableDelayedExpansion
 :: === CONFIG ===
 set "local_version=4.0.0"
 set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
-set "update_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat"
+set "update_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/t.bat"
 set "self_name=%~nx0"
 set "temp_file=update_temp.bat"
 set "launcher_file=updater_launcher.bat"
