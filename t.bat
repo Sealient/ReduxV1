@@ -24,6 +24,7 @@ echo ---------------------------------------------------------
 echo                 NightLib CLI v%local_version%
 echo ---------------------------------------------------------
 echo.
+pause
 
 :: === FETCH LATEST VERSION ===
 for /f "usebackq delims=" %%a in (`powershell -Command "(Invoke-WebRequest -Uri '%version_url%' -UseBasicParsing).Content.Trim()"`) do (
