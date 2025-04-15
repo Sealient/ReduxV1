@@ -3,7 +3,7 @@ chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
 :: === CONFIG ===
-set "local_version=2.1.0"
+set "local_version=3.0.0"
 set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
 set "update_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/t.bat"
 set "self_name=%~nx0"
