@@ -1,8 +1,9 @@
 @echo off
+chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
 :: === CONFIG ===
-set "local_version=3.1.0"
+set "local_version=4.0.0"
 set "version_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/version.txt"
 set "update_url=https://raw.githubusercontent.com/Sealient/NightLib/refs/heads/main/tes.bat"
 set "self_name=%~nx0"
@@ -10,6 +11,8 @@ set "temp_file=update_temp.bat"
 set "launcher_file=updater_launcher.bat"
 set "log_file=update.log"
 set "backup_dir=%~dp0backup"
+set "scheduled_task_dir=%~dp0tasks"
+set "user_data=%~dp0user_data.dat"
 
 :: === UI: HEADER ===
 cls
@@ -24,7 +27,6 @@ echo ---------------------------------------------------------
 echo                 NightLib CLI v%local_version%
 echo ---------------------------------------------------------
 echo.
-pause
 
 :: === FETCH LATEST VERSION ===
 for /f "usebackq delims=" %%a in (`powershell -Command "(Invoke-WebRequest -Uri '%version_url%' -UseBasicParsing).Content.Trim()"`) do (
@@ -76,14 +78,16 @@ echo -------------------------------
 set /p user=Username: 
 set /p pass=Password: 
 
-:: Dummy credentials
+:: Dummy credentials with roles
 set "correct_user=admin"
 set "correct_pass=1234"
+set "role=guest"
 
 if "%user%"=="%correct_user%" (
     if "%pass%"=="%correct_pass%" (
+        set "role=admin"
         echo.
-        echo Login successful!
+        echo Admin login successful!
         timeout /t 1 >nul
         goto :mainmenu
     ) else (
@@ -101,18 +105,20 @@ if "%user%"=="%correct_user%" (
 :mainmenu
 cls
 echo ===============================
-echo     Welcome, %user%
+echo     Welcome, %user% - %role%
 echo     NightLib v%local_version%
 echo ===============================
 echo 1. System Info
 echo 2. File Management
 echo 3. Changelog
 echo 4. Check for Updates
-echo 5. Exit
+echo 5. Scheduled Tasks
+echo 6. Exit
 echo.
-choice /c 12345 /n /m "Choose an option: "
+choice /c 123456 /n /m "Choose an option: "
 
-if errorlevel 5 exit /b
+if errorlevel 6 exit /b
+if errorlevel 5 call :scheduled_tasks & pause & goto :mainmenu
 if errorlevel 4 call :checkupdates & pause & goto :mainmenu
 if errorlevel 3 call :show_changelog & pause & goto :mainmenu
 if errorlevel 2 call :file_management & pause & goto :mainmenu
@@ -138,11 +144,13 @@ echo ------------------------------
 echo 1. List files in directory
 echo 2. Backup a file
 echo 3. Delete a file
-echo 4. Return to menu
+echo 4. Open a file
+echo 5. Return to menu
 echo.
-choice /c 1234 /n /m "Choose an option: "
+choice /c 12345 /n /m "Choose an option: "
 
-if errorlevel 4 goto :mainmenu
+if errorlevel 5 goto :mainmenu
+if errorlevel 4 call :open_file & goto :file_management
 if errorlevel 3 call :delete_file & goto :file_management
 if errorlevel 2 call :backup_file & goto :file_management
 if errorlevel 1 call :list_files & goto :file_management
@@ -191,16 +199,91 @@ if exist "%filename%" (
 pause
 goto :eof
 
+:: === OPEN FILE ===
+:open_file
+cls
+echo ------------------------------
+echo         OPEN FILE
+echo ------------------------------
+set /p filename=Enter the file name to open: 
+if exist "%filename%" (
+    start "" "%filename%"
+    echo File opened successfully!
+) else (
+    echo File not found!
+)
+pause
+goto :eof
+
 :: === SHOW CHANGELOG ===
 :show_changelog
 cls
 echo ------------------------------
 echo           CHANGELOG
 echo ------------------------------
+echo v4.0.0 - Added multi-user support, full file explorer, scheduled tasks, backup version control
 echo v3.1.0 - Added system info, file management, backup & delete functionality
-echo v3.0.0 - Added full update system with self-replacement
-echo v2.1.0 - Initial release with basic login & version checking
+echo v3.0.0 - Initial update system with self-replacement
 echo.
+pause
+goto :eof
+
+:: === SCHEDULED TASKS ===
+:scheduled_tasks
+cls
+echo ------------------------------
+echo       SCHEDULED TASKS
+echo ------------------------------
+echo 1. List scheduled tasks
+echo 2. Create a scheduled task
+echo 3. Delete a scheduled task
+echo 4. Return to menu
+echo.
+choice /c 1234 /n /m "Choose an option: "
+
+if errorlevel 4 goto :mainmenu
+if errorlevel 3 call :delete_task & goto :scheduled_tasks
+if errorlevel 2 call :create_task & goto :scheduled_tasks
+if errorlevel 1 call :list_tasks & goto :scheduled_tasks
+
+:: === LIST TASKS ===
+:list_tasks
+cls
+echo ------------------------------
+echo        TASK LIST
+echo ------------------------------
+dir /b "%scheduled_task_dir%"
+echo.
+pause
+goto :eof
+
+:: === CREATE TASK ===
+:create_task
+cls
+echo ------------------------------
+echo        CREATE TASK
+echo ------------------------------
+set /p taskname=Enter the task name: 
+set /p taskcmd=Enter the command to run (full path): 
+echo Creating task: %taskname%
+echo %taskcmd% > "%scheduled_task_dir%\%taskname%.task"
+echo Task created successfully!
+pause
+goto :eof
+
+:: === DELETE TASK ===
+:delete_task
+cls
+echo ------------------------------
+echo        DELETE TASK
+echo ------------------------------
+set /p taskname=Enter the task name to delete: 
+if exist "%scheduled_task_dir%\%taskname%.task" (
+    del "%scheduled_task_dir%\%taskname%.task"
+    echo Task deleted successfully!
+) else (
+    echo Task not found!
+)
 pause
 goto :eof
 
