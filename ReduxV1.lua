@@ -1170,6 +1170,189 @@ function Rodus:CreateMain(title)
 
 		return tabFunctions
 	end
+	
+	-- Create mandatory Info/Credits tab (second to last)
+	local function createInfoTab()
+		local InfoTab = Instance.new("TextButton")
+		local Arrow = Instance.new("TextLabel")
+
+		InfoTab.Name = "Info"
+		InfoTab.Parent = Container
+		InfoTab.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		InfoTab.BackgroundTransparency = 1.000
+		InfoTab.Size = UDim2.new(0, 193, 0, 24)
+		InfoTab.Font = Enum.Font.JosefinSans
+		InfoTab.Text = " Info"
+		InfoTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+		InfoTab.TextSize = UISettings.TextSize
+		InfoTab.TextXAlignment = Enum.TextXAlignment.Left
+
+		Arrow.Name = "Arrow"
+		Arrow.Parent = InfoTab
+		Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.BackgroundTransparency = 1.000
+		Arrow.Position = UDim2.new(0.907, 0, 0, 0)
+		Arrow.Size = UDim2.new(0, 18, 0, 21)
+		Arrow.Font = Enum.Font.SourceSans
+		Arrow.Text = ">>"
+		Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.TextScaled = true
+		Arrow.TextSize = UISettings.TextSize
+		Arrow.TextWrapped = true
+
+		-- Info Tab Container
+		local InfoContainer = Instance.new("Frame")
+		InfoContainer.Name = "TabContainer"
+		InfoContainer.Parent = InfoTab
+		InfoContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		InfoContainer.BackgroundTransparency = UISettings.BackgroundTransparency
+		InfoContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		InfoContainer.BorderSizePixel = 4
+		InfoContainer.Position = UDim2.new(1.0569948, 0, 0, 0)
+		InfoContainer.Visible = false
+
+		local InfoUIListLayout = Instance.new("UIListLayout")
+		InfoUIListLayout.Parent = InfoContainer
+		InfoUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+		-- Info Tab click functionality
+		InfoTab.MouseButton1Down:Connect(function()
+			local wasOpen = InfoContainer.Visible
+
+			-- Close ALL tabs
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") then
+					child.TextColor3 = Color3.new(255, 255, 255)
+					local arrow = child:FindFirstChild("Arrow")
+					if arrow then
+						arrow.TextColor3 = Color3.new(255, 255, 255)
+					end
+					local tabContainer = child:FindFirstChild("TabContainer")
+					if tabContainer then
+						tabContainer.Visible = false
+					end
+				end
+			end
+
+			if not wasOpen then
+				InfoContainer.Visible = true
+				InfoTab.TextColor3 = UISettings.TextColor
+				InfoTab.Arrow.TextColor3 = UISettings.TextColor
+			end
+		end)
+
+		-- Credits and Information
+
+		-- Title
+		local titleLabel = Instance.new("TextLabel")
+		titleLabel.Name = "Title"
+		titleLabel.Parent = InfoContainer
+		titleLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		titleLabel.BackgroundTransparency = 1.000
+		titleLabel.Size = UDim2.new(0, 193, 0, 24)
+		titleLabel.Font = Enum.Font.JosefinSans
+		titleLabel.Text = " NightHub"
+		titleLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		titleLabel.TextSize = 16
+		titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Creator (in purple)
+		local creatorLabel = Instance.new("TextLabel")
+		creatorLabel.Name = "Creator"
+		creatorLabel.Parent = InfoContainer
+		creatorLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		creatorLabel.BackgroundTransparency = 1.000
+		creatorLabel.Size = UDim2.new(0, 193, 0, 24)
+		creatorLabel.Font = Enum.Font.JosefinSans
+		creatorLabel.Text = " Created by: jneeds"
+		creatorLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		creatorLabel.TextSize = UISettings.TextSize
+		creatorLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Version
+		local versionLabel = Instance.new("TextLabel")
+		versionLabel.Name = "Version"
+		versionLabel.Parent = InfoContainer
+		versionLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		versionLabel.BackgroundTransparency = 1.000
+		versionLabel.Size = UDim2.new(0, 193, 0, 24)
+		versionLabel.Font = Enum.Font.JosefinSans
+		versionLabel.Text = " Version: 2.0.0"
+		versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		versionLabel.TextSize = UISettings.TextSize
+		versionLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Library
+		local libraryLabel = Instance.new("TextLabel")
+		libraryLabel.Name = "Library"
+		libraryLabel.Parent = InfoContainer
+		libraryLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		libraryLabel.BackgroundTransparency = 1.000
+		libraryLabel.Size = UDim2.new(0, 193, 0, 24)
+		libraryLabel.Font = Enum.Font.JosefinSans
+		libraryLabel.Text = " Library: Rodus UI"
+		libraryLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+		libraryLabel.TextSize = UISettings.TextSize
+		libraryLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Controls
+		local controlsLabel = Instance.new("TextLabel")
+		controlsLabel.Name = "Controls"
+		controlsLabel.Parent = InfoContainer
+		controlsLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		controlsLabel.BackgroundTransparency = 1.000
+		controlsLabel.Size = UDim2.new(0, 193, 0, 24)
+		controlsLabel.Font = Enum.Font.JosefinSans
+		controlsLabel.Text = " Controls"
+		controlsLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		controlsLabel.TextSize = UISettings.TextSize
+		controlsLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Control items
+		local control1 = Instance.new("TextLabel")
+		control1.Name = "Control1"
+		control1.Parent = InfoContainer
+		control1.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		control1.BackgroundTransparency = 1.000
+		control1.Size = UDim2.new(0, 193, 0, 20)
+		control1.Font = Enum.Font.JosefinSans
+		control1.Text = " Right Ctrl: Hide/Show"
+		control1.TextColor3 = Color3.fromRGB(255, 255, 255)
+		control1.TextSize = 12
+		control1.TextXAlignment = Enum.TextXAlignment.Left
+
+		local control2 = Instance.new("TextLabel")
+		control2.Name = "Control2"
+		control2.Parent = InfoContainer
+		control2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		control2.BackgroundTransparency = 1.000
+		control2.Size = UDim2.new(0, 193, 0, 20)
+		control2.Font = Enum.Font.JosefinSans
+		control2.Text = " Minimize: Collapse"
+		control2.TextColor3 = Color3.fromRGB(255, 255, 255)
+		control2.TextSize = 12
+		control2.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Discord/Contact (in purple)
+		local discordLabel = Instance.new("TextLabel")
+		discordLabel.Name = "Discord"
+		discordLabel.Parent = InfoContainer
+		discordLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		discordLabel.BackgroundTransparency = 1.000
+		discordLabel.Size = UDim2.new(0, 193, 0, 24)
+		discordLabel.Font = Enum.Font.JosefinSans
+		discordLabel.Text = " Discord: jneeds"
+		discordLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		discordLabel.TextSize = UISettings.TextSize
+		discordLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Update container size
+		InfoContainer.Size = UDim2.new(0, 193, 0, InfoUIListLayout.AbsoluteContentSize.Y)
+		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
+	end
+
+	-- Create info tab immediately (before settings)
+	createInfoTab()
 
 	-- Create mandatory Settings tab (always last)
 	local function createSettingsTab()
