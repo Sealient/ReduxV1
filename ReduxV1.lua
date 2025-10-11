@@ -210,7 +210,7 @@ function Rodus:CreateMain(title)
 
 		-- Tab-specific functions
 		local tabFunctions = {}
-		
+
 		function tabFunctions:CreateSlider(buttonText, minValue, maxValue, defaultValue, callback)
 			local Slider = Instance.new("TextButton")
 			local Arrow = Instance.new("TextButton")
@@ -1170,7 +1170,7 @@ function Rodus:CreateMain(title)
 
 		return tabFunctions
 	end
-	
+
 	-- Create mandatory Info/Credits tab (second to last)
 	local function createInfoTab()
 		local InfoTab = Instance.new("TextButton")
@@ -1251,7 +1251,7 @@ function Rodus:CreateMain(title)
 		titleLabel.BackgroundTransparency = 1.000
 		titleLabel.Size = UDim2.new(0, 193, 0, 24)
 		titleLabel.Font = Enum.Font.JosefinSans
-		titleLabel.Text = " NightHub"
+		titleLabel.Text = " "..title
 		titleLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
 		titleLabel.TextSize = 16
 		titleLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1264,7 +1264,7 @@ function Rodus:CreateMain(title)
 		creatorLabel.BackgroundTransparency = 1.000
 		creatorLabel.Size = UDim2.new(0, 193, 0, 24)
 		creatorLabel.Font = Enum.Font.JosefinSans
-		creatorLabel.Text = " Created by: jneeds"
+		creatorLabel.Text = " Created by: Sealient"
 		creatorLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
 		creatorLabel.TextSize = UISettings.TextSize
 		creatorLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1277,7 +1277,7 @@ function Rodus:CreateMain(title)
 		versionLabel.BackgroundTransparency = 1.000
 		versionLabel.Size = UDim2.new(0, 193, 0, 24)
 		versionLabel.Font = Enum.Font.JosefinSans
-		versionLabel.Text = " Version: 2.0.0"
+		versionLabel.Text = " Version: 1.0.0"
 		versionLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		versionLabel.TextSize = UISettings.TextSize
 		versionLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1290,7 +1290,7 @@ function Rodus:CreateMain(title)
 		libraryLabel.BackgroundTransparency = 1.000
 		libraryLabel.Size = UDim2.new(0, 193, 0, 24)
 		libraryLabel.Font = Enum.Font.JosefinSans
-		libraryLabel.Text = " Library: Rodus UI"
+		libraryLabel.Text = " Library: ReduxV1"
 		libraryLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 		libraryLabel.TextSize = UISettings.TextSize
 		libraryLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1321,18 +1321,6 @@ function Rodus:CreateMain(title)
 		control1.TextSize = 12
 		control1.TextXAlignment = Enum.TextXAlignment.Left
 
-		local control2 = Instance.new("TextLabel")
-		control2.Name = "Control2"
-		control2.Parent = InfoContainer
-		control2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-		control2.BackgroundTransparency = 1.000
-		control2.Size = UDim2.new(0, 193, 0, 20)
-		control2.Font = Enum.Font.JosefinSans
-		control2.Text = " Minimize: Collapse"
-		control2.TextColor3 = Color3.fromRGB(255, 255, 255)
-		control2.TextSize = 12
-		control2.TextXAlignment = Enum.TextXAlignment.Left
-
 		-- Discord/Contact (in purple)
 		local discordLabel = Instance.new("TextLabel")
 		discordLabel.Name = "Discord"
@@ -1341,10 +1329,36 @@ function Rodus:CreateMain(title)
 		discordLabel.BackgroundTransparency = 1.000
 		discordLabel.Size = UDim2.new(0, 193, 0, 24)
 		discordLabel.Font = Enum.Font.JosefinSans
-		discordLabel.Text = " Discord: jneeds"
+		discordLabel.Text = " Discord: sealrl_"
 		discordLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
 		discordLabel.TextSize = UISettings.TextSize
 		discordLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- GitHub/Contact (in purple)
+		local githubLabel = Instance.new("TextLabel")
+		githubLabel.Name = "GitHub"
+		githubLabel.Parent = InfoContainer
+		githubLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		githubLabel.BackgroundTransparency = 1.000
+		githubLabel.Size = UDim2.new(0, 193, 0, 24)
+		githubLabel.Font = Enum.Font.JosefinSans
+		githubLabel.Text = " GitHub: https://github.com/Sealient"
+		githubLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		githubLabel.TextSize = UISettings.TextSize
+		githubLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+		-- Inspo/Contact (in purple)
+		local InspoLabel = Instance.new("TextLabel")
+		InspoLabel.Name = "Inspo"
+		InspoLabel.Parent = InfoContainer
+		InspoLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		InspoLabel.BackgroundTransparency = 1.000
+		InspoLabel.Size = UDim2.new(0, 193, 0, 24)
+		InspoLabel.Font = Enum.Font.JosefinSans
+		InspoLabel.Text = " Inspo by: Rodus UI"
+		InspoLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		InspoLabel.TextSize = UISettings.TextSize
+		InspoLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		-- Update container size
 		InfoContainer.Size = UDim2.new(0, 193, 0, InfoUIListLayout.AbsoluteContentSize.Y)
