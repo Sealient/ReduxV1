@@ -710,36 +710,154 @@
             </div>
         </section>
 
-        <!-- Examples Section -->
-        <section class="section" id="examples">
-            <h2 class="section-title"><i class="fas fa-code"></i> Complete Example</h2>
-            <p>Here's a complete example showcasing all UI elements:</p>
-            
-            <div class="code-block">
-                <div class="code-header">
-                    <div class="code-title">Complete Example</div>
-                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-                </div>
-                <span class="code-comment">-- Complete ReduxV1 Example</span><br>
-                <span class="code-keyword">local</span> ReduxV1 = <span class="code-keyword">loadstring</span>(<span class="code-keyword">game</span>:HttpGet(<span class="code-string">"URL_TO_SCRIPT"</span>))()<br>
-                <span class="code-keyword">local</span> UI = ReduxV1:CreateMain(<span class="code-string">"ExampleUI"</span>)<br>
-                <br>
-                <span class="code-comment">-- Main Tab</span><br>
-                <span class="code-keyword">local</span> MainTab = UI:CreateTab(<span class="code-string">"Main"</span>)<br>
-                MainTab:CreateLabel(<span class="code-string">"Welcome!"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">255</span>))<br>
-                MainTab:CreateButton(<span class="code-string">"Test Button"</span>, <span class="code-string">"Click me"</span>, <span class="code-keyword">function</span>()<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Working!"</span>)<br>
-                <span class="code-keyword">end</span>)<br>
-                <br>
-                <span class="code-comment">-- Player Tab</span><br>
-                <span class="code-keyword">local</span> PlayerTab = UI:CreateTab(<span class="code-string">"Player"</span>)<br>
-                PlayerTab:CreateSlider(<span class="code-string">"WalkSpeed"</span>, <span class="code-number">16</span>, <span class="code-number">200</span>, <span class="code-number">16</span>, <span class="code-keyword">function</span>(value)<br>
-                &nbsp;&nbsp;&nbsp;&nbsp;game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value<br>
-                <span class="code-keyword">end</span>)<br>
-                <br>
-                <span class="code-comment">-- Settings tab is automatically added!</span>
-            </div>
-        </section>
+<!-- Examples Section -->
+<section class="section" id="examples">
+    <h2 class="section-title"><i class="fas fa-code"></i> Complete Example</h2>
+    <p>Here's a complete example showcasing all UI elements:</p>
+    
+    <div class="code-block">
+        <div class="code-header">
+            <div class="code-title">Complete Example</div>
+            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        </div>
+        <span class="code-comment">-- Paste this in a LocalScript</span><br>
+        <span class="code-keyword">local</span> ReduxV1 = <span class="code-keyword">loadstring</span>(<span class="code-keyword">game</span>:HttpGet(<span class="code-string">"https://raw.githubusercontent.com/Sealient/ReduxV1/refs/heads/main/ReduxV1.lua"</span>))()<br>
+        <br>
+        <span class="code-comment">-- Create the main UI</span><br>
+        <span class="code-keyword">local</span> UI = ReduxV1:CreateMain(<span class="code-string">"NightHub"</span>)<br>
+        <br>
+        <span class="code-comment">-- Main Tab</span><br>
+        <span class="code-keyword">local</span> MainTab = UI:CreateTab(<span class="code-string">"Main"</span>)<br>
+        <br>
+        MainTab:CreateLabel(<span class="code-string">"Welcome to NightHub!"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">255</span>))<br>
+        <br>
+        MainTab:CreateButton(<span class="code-string">"Print Hello"</span>, <span class="code-string">"Prints a welcome message"</span>, <span class="code-keyword">function</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Hello from NightHub!"</span>)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        MainTab:CreateToggle(<span class="code-string">"Auto Click"</span>, <span class="code-string">"Automatically clicks for you"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Auto Click:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        MainTab:CreateSideDropButton(<span class="code-string">"Teleport"</span>, {<span class="code-string">"Spawn"</span>, <span class="code-string">"Forest"</span>, <span class="code-string">"City"</span>, <span class="code-string">"Secret Base"</span>}, <span class="code-keyword">function</span>(location)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Teleporting to:"</span>, location)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        MainTab:CreateButton(<span class="code-string">"Destroy All"</span>, <span class="code-string">"Destroys all workspace parts"</span>, <span class="code-keyword">function</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Destroying all parts..."</span>)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-comment">-- Player Tab</span><br>
+        <span class="code-keyword">local</span> PlayerTab = UI:CreateTab(<span class="code-string">"Player"</span>)<br>
+        <br>
+        PlayerTab:CreateLabel(<span class="code-string">"Player Settings"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">0</span>))<br>
+        <br>
+        <span class="code-keyword">local</span> walkSpeedSlider = PlayerTab:CreateSlider(<span class="code-string">"WalkSpeed"</span>, <span class="code-number">16</span>, <span class="code-number">200</span>, <span class="code-number">16</span>, <span class="code-keyword">function</span>(value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">local</span> player = <span class="code-keyword">game</span>.Players.LocalPlayer<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> player.Character <span class="code-keyword">and</span> player.Character:FindFirstChild(<span class="code-string">"Humanoid"</span>) <span class="code-keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;player.Character.Humanoid.WalkSpeed = value<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">end</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"WalkSpeed:"</span>, value)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-keyword">local</span> jumpPowerSlider = PlayerTab:CreateSlider(<span class="code-string">"JumpPower"</span>, <span class="code-number">50</span>, <span class="code-number">200</span>, <span class="code-number">50</span>, <span class="code-keyword">function</span>(value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">local</span> player = <span class="code-keyword">game</span>.Players.LocalPlayer<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">if</span> player.Character <span class="code-keyword">and</span> player.Character:FindFirstChild(<span class="code-string">"Humanoid"</span>) <span class="code-keyword">then</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;player.Character.Humanoid.JumpPower = value<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">end</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"JumpPower:"</span>, value)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        PlayerTab:CreateToggle(<span class="code-string">"Fly Mode"</span>, <span class="code-string">"Enables flying"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Fly Mode:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        PlayerTab:CreateToggle(<span class="code-string">"Noclip"</span>, <span class="code-string">"Walk through walls"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Noclip:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-comment">-- Combat Tab</span><br>
+        <span class="code-keyword">local</span> CombatTab = UI:CreateTab(<span class="code-string">"Combat"</span>)<br>
+        <br>
+        CombatTab:CreateLabel(<span class="code-string">"Combat Features"</span>, Color3.fromRGB(<span class="code-number">255</span>, <span class="code-number">50</span>, <span class="code-number">50</span>))<br>
+        <br>
+        CombatTab:CreateToggle(<span class="code-string">"Kill Aura"</span>, <span class="code-string">"Auto damage nearby players"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Kill Aura:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        CombatTab:CreateToggle(<span class="code-string">"Auto Attack"</span>, <span class="code-string">"Automatically attacks"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Auto Attack:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        CombatTab:CreateSideDropButton(<span class="code-string">"Weapon"</span>, {<span class="code-string">"Sword"</span>, <span class="code-string">"Gun"</span>, <span class="code-string">"Bow"</span>, <span class="code-string">"Magic Staff"</span>}, <span class="code-keyword">function</span>(weapon)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Equipped:"</span>, weapon)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-keyword">local</span> damageSlider = CombatTab:CreateSlider(<span class="code-string">"Damage Multiplier"</span>, <span class="code-number">1</span>, <span class="code-number">10</span>, <span class="code-number">1</span>, <span class="code-keyword">function</span>(value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Damage Multiplier:"</span>, value)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        CombatTab:CreateButton(<span class="code-string">"One Hit Kill"</span>, <span class="code-string">"Instantly kill enemies"</span>, <span class="code-keyword">function</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"One Hit Kill activated!"</span>)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-comment">-- Visuals Tab</span><br>
+        <span class="code-keyword">local</span> VisualsTab = UI:CreateTab(<span class="code-string">"Visuals"</span>)<br>
+        <br>
+        VisualsTab:CreateLabel(<span class="code-string">"Visual Modifications"</span>, Color3.fromRGB(<span class="code-number">255</span>, <span class="code-number">255</span>, <span class="code-number">0</span>))<br>
+        <br>
+        <span class="code-keyword">local</span> espToggle = VisualsTab:CreateToggle(<span class="code-string">"ESP"</span>, <span class="code-string">"See players through walls"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"ESP:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        VisualsTab:CreateToggle(<span class="code-string">"Chams"</span>, <span class="code-string">"Color player models"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Chams:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        VisualsTab:CreateSideDropButton(<span class="code-string">"Theme"</span>, {<span class="code-string">"Dark"</span>, <span class="code-string">"Light"</span>, <span class="code-string">"Red"</span>, <span class="code-string">"Blue"</span>, <span class="code-string">"Green"</span>}, <span class="code-keyword">function</span>(theme)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Theme set to:"</span>, theme)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-keyword">local</span> fovSlider = VisualsTab:CreateSlider(<span class="code-string">"Field of View"</span>, <span class="code-number">70</span>, <span class="code-number">120</span>, <span class="code-number">70</span>, <span class="code-keyword">function</span>(value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;workspace.CurrentCamera.FieldOfView = value<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"FOV:"</span>, value)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-comment">-- Create color pickers for different visual elements</span><br>
+        <span class="code-keyword">local</span> espColorPicker = VisualsTab:CreateColorPicker(<span class="code-string">"ESP Color"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">0</span>), <span class="code-keyword">function</span>(color)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"ESP Color:"</span>, color)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-keyword">local</span> chamsColorPicker = VisualsTab:CreateColorPicker(<span class="code-string">"Chams Color"</span>, Color3.fromRGB(<span class="code-number">255</span>, <span class="code-number">0</span>, <span class="code-number">0</span>), <span class="code-keyword">function</span>(color)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Chams Color:"</span>, color)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-comment">-- Farming Tab</span><br>
+        <span class="code-keyword">local</span> FarmingTab = UI:CreateTab(<span class="code-string">"Farming"</span>)<br>
+        <br>
+        FarmingTab:CreateLabel(<span class="code-string">"Auto Farming"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">255</span>))<br>
+        <br>
+        FarmingTab:CreateToggle(<span class="code-string">"Auto Farm Coins"</span>, <span class="code-string">"Automatically collects coins"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Auto Farm Coins:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        FarmingTab:CreateToggle(<span class="code-string">"Auto Sell"</span>, <span class="code-string">"Automatically sells items"</span>, <span class="code-keyword">function</span>(state)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Auto Sell:"</span>, state)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        FarmingTab:CreateSideDropButton(<span class="code-string">"Farm Type"</span>, {<span class="code-string">"Coins"</span>, <span class="code-string">"Gems"</span>, <span class="code-string">"Items"</span>, <span class="code-string">"All"</span>}, <span class="code-keyword">function</span>(type)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Farming:"</span>, type)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        <span class="code-keyword">local</span> farmSpeedSlider = FarmingTab:CreateSlider(<span class="code-string">"Farm Speed"</span>, <span class="code-number">1</span>, <span class="code-number">10</span>, <span class="code-number">1</span>, <span class="code-keyword">function</span>(value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Farm Speed:"</span>, value)<br>
+        <span class="code-keyword">end</span>)<br>
+        <br>
+        FarmingTab:CreateButton(<span class="code-string">"Collect All"</span>, <span class="code-string">"Collects all nearby items"</span>, <span class="code-keyword">function</span>()<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Collecting all items..."</span>)<br>
+        <span class="code-keyword">end</span>)
+    </div>
+</section>
 
         <!-- API Reference Section -->
         <section class="section" id="api">
