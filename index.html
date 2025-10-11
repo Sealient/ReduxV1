@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReduxV1 UI Library Documentation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #00ff00;
+            --primary-dark: #00cc00;
+            --primary-light: #66ff66;
+            --primary-transparent: rgba(0, 255, 0, 0.1);
+            --bg-dark: #0a0a0a;
+            --bg-darker: #050505;
+            --bg-light: #1a1a1a;
+            --text: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent: #ff6b6b;
+            --accent2: #6b6bff;
+            --accent3: #6bff6b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-darker) 0%, var(--bg-dark) 100%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 255, 0, 0.02) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(20, 20, 20, 0.9) 100%);
+            border-bottom: 2px solid var(--primary);
+            padding: 2rem 0;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.05), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 8s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 3px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .tagline {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .version-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: var(--bg-dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-left: 1rem;
+            vertical-align: super;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 1rem;
+            border-radius: 10px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 0, 0.2);
+        }
+
+        .nav-btn {
+            background: var(--primary-transparent);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .nav-btn.active {
+            background: rgba(0, 255, 0, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--primary);
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 255, 0, 0.2);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .section-title i {
+            font-size: 1.8rem;
+        }
+
+        .subsection-title {
+            color: var(--primary);
+            font-size: 1.6rem;
+            margin: 1.5rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .subsection-title i {
+            font-size: 1.3rem;
+        }
+
+        .code-block {
+            background: var(--bg-light);
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+        }
+
+        .code-title {
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .copy-btn {
+            background: var(--primary-transparent);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .code-comment {
+            color: var(--text-secondary);
+        }
+
+        .code-keyword {
+            color: var(--accent);
+        }
+
+        .code-string {
+            color: var(--accent3);
+        }
+
+        .code-number {
+            color: var(--accent2);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(0, 255, 0, 0.05) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border: 1px solid var(--primary);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(0, 255, 0, 0.05), transparent);
+            transform: translateX(-100%);
+        }
+
+        .feature-card:hover::before {
+            animation: shimmer 1.5s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 255, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .feature-title {
+            color: var(--primary);
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+
+        .example-ui {
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ui-preview {
+            background: var(--bg-light);
+            border: 1px solid var(--primary);
+            border-radius: 5px;
+            padding: 1rem;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            position: relative;
+        }
+
+        .method-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .method-table th,
+        .method-table td {
+            border: 1px solid var(--primary);
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .method-table th {
+            background: rgba(0, 255, 0, 0.1);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .method-table tr:nth-child(even) {
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .method-table tr:hover {
+            background: rgba(0, 255, 0, 0.1);
+        }
+
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--primary);
+            margin-top: 2rem;
+            color: var(--text-secondary);
+            background: rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent, rgba(0, 255, 0, 0.05));
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .social-link {
+            color: var(--primary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            color: var(--primary-light);
+            transform: translateY(-3px);
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: var(--bg-dark);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 255, 0, 0.7);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: var(--bg-dark);
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 200px;
+                text-align: center;
+                justify-content: center;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 3rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Animation for code blocks */
+        @keyframes highlight {
+            0% { background-color: rgba(0, 255, 0, 0.1); }
+            100% { background-color: transparent; }
+        }
+
+        .highlight {
+            animation: highlight 2s ease;
+        }
+
+        /* Progress bar */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: transparent;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 3px;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <div class="logo">ReduxV1 <span class="version-badge">v1.0</span></div>
+            <div class="tagline">Advanced Roblox UI Library - Clean, Modular, Powerful</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav class="nav">
+            <a href="#introduction" class="nav-btn active"><i class="fas fa-home"></i> Introduction</a>
+            <a href="#installation" class="nav-btn"><i class="fas fa-download"></i> Installation</a>
+            <a href="#quick-start" class="nav-btn"><i class="fas fa-rocket"></i> Quick Start</a>
+            <a href="#elements" class="nav-btn"><i class="fas fa-cube"></i> UI Elements</a>
+            <a href="#examples" class="nav-btn"><i class="fas fa-code"></i> Examples</a>
+            <a href="#api" class="nav-btn"><i class="fas fa-book"></i> API Reference</a>
+        </nav>
+
+        <!-- Introduction Section -->
+        <section class="section" id="introduction">
+            <h2 class="section-title"><i class="fas fa-info-circle"></i> Introduction</h2>
+            <p>ReduxV1 is a powerful, lightweight UI library for Roblox that provides a clean, modular interface system with extensive customization options.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-palette"></i></div>
+                    <h3 class="feature-title">Customizable Theme</h3>
+                    <p>Built-in theme system with color pickers, transparency controls, and text size options.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+                    <h3 class="feature-title">Lightweight</h3>
+                    <p>Optimized performance with minimal impact on your game's performance.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-cubes"></i></div>
+                    <h3 class="feature-title">Modular Design</h3>
+                    <p>Easy to extend and customize with a clean, organized code structure.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation Section -->
+        <section class="section" id="installation">
+            <h2 class="section-title"><i class="fas fa-download"></i> Installation</h2>
+            <p>Load ReduxV1 directly into your Roblox game using a single line of code:</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">LocalScript</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-comment">-- Paste this in a LocalScript</span><br>
+                <span class="code-keyword">local</span> ReduxV1 = <span class="code-keyword">loadstring</span>(<span class="code-keyword">game</span>:HttpGet(<span class="code-string">"https://raw.githubusercontent.com/Sealient/ReduxV1/refs/heads/main/ReduxV1.lua"</span>))()
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section class="section" id="quick-start">
+            <h2 class="section-title"><i class="fas fa-rocket"></i> Quick Start</h2>
+            <p>Create your first UI in just a few lines of code:</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Basic Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-comment">-- Load the library</span><br>
+                <span class="code-keyword">local</span> ReduxV1 = <span class="code-keyword">loadstring</span>(<span class="code-keyword">game</span>:HttpGet(<span class="code-string">"https://raw.githubusercontent.com/Sealient/ReduxV1/refs/heads/main/ReduxV1.lua"</span>))()<br>
+                <br>
+                <span class="code-comment">-- Create main UI window</span><br>
+                <span class="code-keyword">local</span> UI = ReduxV1:CreateMain(<span class="code-string">"MyUI"</span>)<br>
+                <br>
+                <span class="code-comment">-- Create a tab</span><br>
+                <span class="code-keyword">local</span> MainTab = UI:CreateTab(<span class="code-string">"Main"</span>)<br>
+                <br>
+                <span class="code-comment">-- Add a button</span><br>
+                MainTab:CreateButton(<span class="code-string">"Click Me"</span>, <span class="code-string">"This is a test button"</span>, <span class="code-keyword">function</span>()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Button clicked!"</span>)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+        </section>
+
+        <!-- UI Elements Section -->
+        <section class="section" id="elements">
+            <h2 class="section-title"><i class="fas fa-cube"></i> UI Elements</h2>
+            
+            <h3 class="subsection-title"><i class="fas fa-mouse-pointer"></i> Buttons</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Button Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                MainTab:CreateButton(<span class="code-string">"Button Text"</span>, <span class="code-string">"Tooltip text"</span>, <span class="code-keyword">function</span>()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">-- Your code here</span><br>
+                <span class="code-keyword">end</span>)
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-toggle-on"></i> Toggles</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Toggle Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-keyword">local</span> toggle = MainTab:CreateToggle(<span class="code-string">"Toggle Text"</span>, <span class="code-string">"Tooltip text"</span>, <span class="code-keyword">function</span>(state)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Toggle state:"</span>, state)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-sliders-h"></i> Sliders</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Slider Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-keyword">local</span> slider = MainTab:CreateSlider(<span class="code-string">"Slider Text"</span>, <span class="code-number">0</span>, <span class="code-number">100</span>, <span class="code-number">50</span>, <span class="code-keyword">function</span>(value)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Slider value:"</span>, value)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-eye-dropper"></i> Color Pickers</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Color Picker Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-keyword">local</span> colorPicker = MainTab:CreateColorPicker(<span class="code-string">"Color Picker"</span>, Color3.fromRGB(<span class="code-number">255</span>, <span class="code-number">0</span>, <span class="code-number">0</span>), <span class="code-keyword">function</span>(color)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Selected color:"</span>, color)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-caret-down"></i> Dropdowns</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Dropdown Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                MainTab:CreateSideDropButton(<span class="code-string">"Dropdown"</span>, {<span class="code-string">"Option 1"</span>, <span class="code-string">"Option 2"</span>, <span class="code-string">"Option 3"</span>}, <span class="code-keyword">function</span>(selected)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Selected:"</span>, selected)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-tag"></i> Labels</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Label Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                MainTab:CreateLabel(<span class="code-string">"Label Text"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">255</span>))
+            </div>
+
+            <h3 class="subsection-title"><i class="fas fa-font"></i> Text Input</h3>
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Text Input Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                MainTab:CreateTextBox(<span class="code-string">"Text Input"</span>, <span class="code-string">"Placeholder text"</span>, <span class="code-keyword">function</span>(text)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Entered text:"</span>, text)<br>
+                <span class="code-keyword">end</span>)
+            </div>
+        </section>
+
+        <!-- Examples Section -->
+        <section class="section" id="examples">
+            <h2 class="section-title"><i class="fas fa-code"></i> Complete Example</h2>
+            <p>Here's a complete example showcasing all UI elements:</p>
+            
+            <div class="code-block">
+                <div class="code-header">
+                    <div class="code-title">Complete Example</div>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <span class="code-comment">-- Complete ReduxV1 Example</span><br>
+                <span class="code-keyword">local</span> ReduxV1 = <span class="code-keyword">loadstring</span>(<span class="code-keyword">game</span>:HttpGet(<span class="code-string">"URL_TO_SCRIPT"</span>))()<br>
+                <span class="code-keyword">local</span> UI = ReduxV1:CreateMain(<span class="code-string">"ExampleUI"</span>)<br>
+                <br>
+                <span class="code-comment">-- Main Tab</span><br>
+                <span class="code-keyword">local</span> MainTab = UI:CreateTab(<span class="code-string">"Main"</span>)<br>
+                MainTab:CreateLabel(<span class="code-string">"Welcome!"</span>, Color3.fromRGB(<span class="code-number">0</span>, <span class="code-number">255</span>, <span class="code-number">255</span>))<br>
+                MainTab:CreateButton(<span class="code-string">"Test Button"</span>, <span class="code-string">"Click me"</span>, <span class="code-keyword">function</span>()<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">print</span>(<span class="code-string">"Working!"</span>)<br>
+                <span class="code-keyword">end</span>)<br>
+                <br>
+                <span class="code-comment">-- Player Tab</span><br>
+                <span class="code-keyword">local</span> PlayerTab = UI:CreateTab(<span class="code-string">"Player"</span>)<br>
+                PlayerTab:CreateSlider(<span class="code-string">"WalkSpeed"</span>, <span class="code-number">16</span>, <span class="code-number">200</span>, <span class="code-number">16</span>, <span class="code-keyword">function</span>(value)<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value<br>
+                <span class="code-keyword">end</span>)<br>
+                <br>
+                <span class="code-comment">-- Settings tab is automatically added!</span>
+            </div>
+        </section>
+
+        <!-- API Reference Section -->
+        <section class="section" id="api">
+            <h2 class="section-title"><i class="fas fa-book"></i> API Reference</h2>
+            
+            <h3 class="subsection-title"><i class="fas fa-window-maximize"></i> ReduxV1:CreateMain(title)</h3>
+            <p>Creates the main UI window. Returns a UI object.</p>
+            <table class="method-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>title</td>
+                    <td>string</td>
+                    <td>Window title</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title"><i class="fas fa-folder"></i> UI:CreateTab(name)</h3>
+            <p>Creates a new tab. Returns a Tab object.</p>
+            <table class="method-table">
+                <tr>
+                    <th>Parameter</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>name</td>
+                    <td>string</td>
+                    <td>Tab display name</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title"><i class="fas fa-list"></i> Tab Methods</h3>
+            <table class="method-table">
+                <tr>
+                    <th>Method</th>
+                    <th>Parameters</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>CreateButton</td>
+                    <td>text, tooltip, callback</td>
+                    <td>Creates a clickable button</td>
+                </tr>
+                <tr>
+                    <td>CreateToggle</td>
+                    <td>text, tooltip, callback</td>
+                    <td>Creates a toggle switch</td>
+                </tr>
+                <tr>
+                    <td>CreateSlider</td>
+                    <td>text, min, max, default, callback</td>
+                    <td>Creates a value slider</td>
+                </tr>
+                <tr>
+                    <td>CreateColorPicker</td>
+                    <td>text, defaultColor, callback</td>
+                    <td>Creates a color picker</td>
+                </tr>
+                <tr>
+                    <td>CreateSideDropButton</td>
+                    <td>text, options, callback</td>
+                    <td>Creates a dropdown menu</td>
+                </tr>
+                <tr>
+                    <td>CreateLabel</td>
+                    <td>text, color</td>
+                    <td>Creates a text label</td>
+                </tr>
+                <tr>
+                    <td>CreateTextBox</td>
+                    <td>text, placeholder, callback</td>
+                    <td>Creates a text input field</td>
+                </tr>
+            </table>
+
+            <h3 class="subsection-title"><i class="fas fa-cog"></i> Built-in Settings</h3>
+            <p>ReduxV1 automatically includes a Settings tab with:</p>
+            <ul>
+                <li>Background transparency control</li>
+                <li>Text color picker (Green, Blue, Red, Yellow, White)</li>
+                <li>Text size toggle (14px / 16px)</li>
+                <li>Reset to defaults button</li>
+                <li>Destroy UI button</li>
+            </ul>
+        </section>
+
+        <!-- Features Section -->
+        <section class="section" id="features">
+            <h2 class="section-title"><i class="fas fa-star"></i> Key Features</h2>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-palette"></i> Theme System</h3>
+                    <p>Dynamic color theming with real-time updates</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-bolt"></i> Performance</h3>
+                    <p>Optimized for smooth performance in any game</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-cubes"></i> Modular</h3>
+                    <p>Easy to extend with custom elements</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-user-friends"></i> User-Friendly</h3>
+                    <p>Intuitive API with comprehensive documentation</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-shield-alt"></i> Safe</h3>
+                    <p>Error handling with pcall protection</p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title"><i class="fas fa-mobile-alt"></i> Responsive</h3>
+                    <p>Automatically adjusts to content size</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+            </div>
+            <p>ReduxV1 UI Library &copy; 2024. Built for Roblox developers.</p>
+            <p>Clean. Modular. Powerful.</p>
+        </div>
+    </footer>
+
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <div class="notification" id="notification">
+        Code copied to clipboard!
+    </div>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('.nav-btn').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                // Update active nav button
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                targetElement.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            });
+        });
+
+        // Copy code functionality
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const codeText = codeBlock.innerText.replace('Copy', '').trim();
+            
+            navigator.clipboard.writeText(codeText).then(() => {
+                // Show notification
+                const notification = document.getElementById('notification');
+                notification.classList.add('show');
+                
+                // Highlight the code block
+                codeBlock.classList.add('highlight');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    codeBlock.classList.remove('highlight');
+                }, 2000);
+            });
+        }
+
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+            
+            // Update progress bar
+            const winHeight = window.innerHeight;
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollTop = window.pageYOffset;
+            const scrollPercent = (scrollTop / (docHeight - winHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrollPercent + '%';
+        });
+        
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Add some interactive effects
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.feature-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                if (x > 0 && x < rect.width && y > 0 && y < rect.height) {
+                    card.style.transform = `perspective(1000px) rotateX(${(y - rect.height/2)/20}deg) rotateY(${(x - rect.width/2)/20}deg) translateY(-5px)`;
+                } else {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+                }
+            });
+        });
+
+        // Update active nav based on scroll position
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navButtons = document.querySelectorAll('.nav-btn');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 100;
+                if (window.pageYOffset >= sectionTop) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navButtons.forEach(button => {
+                button.classList.remove('active');
+                if (button.getAttribute('href') === `#${currentSection}`) {
+                    button.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
