@@ -670,6 +670,7 @@ function Rodus:CreateMain(title)
 	end
 
 	-- Auto-create Settings tab with UI customization (always last)
+	-- Auto-create Settings tab with UI customization (always last)
 	local function createSettingsTab()
 		local SettingsTabButton = Instance.new("TextButton")
 		local SettingsArrow = Instance.new("TextLabel")
@@ -1096,7 +1097,7 @@ function Rodus:CreateMain(title)
 		settingsTabFunctions:CreateLabel("UI Controls", currentSettings.MainColor)
 
 		settingsTabFunctions:CreateButton("Reset to Default", "Resets all UI settings", function()
-			currentSettings = table.clone(defaultSettings)
+			currentSettings = tableClone(defaultSettings)
 			applySettings()
 			print("UI settings reset to default!")
 		end)
@@ -1109,14 +1110,13 @@ function Rodus:CreateMain(title)
 		settingsTabFunctions:CreateLabel("RightControl: Hide/Show", currentSettings.TextColor)
 		settingsTabFunctions:CreateLabel("Minimize: Collapse/Expand", currentSettings.TextColor)
 
-		-- Store references
+		-- Store reference
 		settingsTabButton = SettingsTabButton
-		settingsTabInstance = settingsTabFunctions
 
 		return settingsTabFunctions
 	end
 
-	-- Create the settings tab immediately
+	-- Create the settings tab immediately (call this function after creating the main UI)
 	createSettingsTab()
 
 	-- Update container size
