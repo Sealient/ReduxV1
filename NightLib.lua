@@ -210,6 +210,315 @@ function Rodus:CreateMain(title)
 
 		-- Tab-specific functions
 		local tabFunctions = {}
+		
+		function tabFunctions:CreateSlider(buttonText, minValue, maxValue, defaultValue, callback)
+			local Slider = Instance.new("TextButton")
+			local Arrow = Instance.new("TextButton")
+			local ValueLabel = Instance.new("TextLabel")
+			local SliderContainer = Instance.new("Frame")
+			local Hover = Instance.new("Frame")
+
+			-- Default values
+			minValue = minValue or 0
+			maxValue = maxValue or 100
+			defaultValue = defaultValue or minValue
+
+			-- Main button
+			Slider.Name = buttonText
+			Slider.Parent = TabContainer
+			Slider.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Slider.BackgroundTransparency = 1.000
+			Slider.Size = UDim2.new(0, 193, 0, 24)
+			Slider.Font = Enum.Font.JosefinSans
+			Slider.Text = " "..buttonText
+			Slider.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Slider.TextSize = UISettings.TextSize
+			Slider.TextXAlignment = Enum.TextXAlignment.Left
+
+			-- Arrow
+			Arrow.Name = "Arrow"
+			Arrow.Parent = Slider
+			Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.BackgroundTransparency = 1.000
+			Arrow.Position = UDim2.new(0.906735778, 0, 0, 0)
+			Arrow.Size = UDim2.new(0, 18, 0, 21)
+			Arrow.Font = Enum.Font.SourceSans
+			Arrow.Text = ">>"
+			Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.TextScaled = true
+			Arrow.TextSize = UISettings.TextSize
+			Arrow.TextWrapped = true
+
+			-- Value display
+			ValueLabel.Name = "ValueLabel"
+			ValueLabel.Parent = Slider
+			ValueLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ValueLabel.BackgroundTransparency = 1.000
+			ValueLabel.Position = UDim2.new(0.7, 0, 0, 0)
+			ValueLabel.Size = UDim2.new(0, 40, 0, 24)
+			ValueLabel.Font = Enum.Font.JosefinSans
+			ValueLabel.Text = tostring(defaultValue)
+			ValueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			ValueLabel.TextSize = UISettings.TextSize
+			ValueLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+			-- Slider container
+			SliderContainer.Name = "SliderContainer"
+			SliderContainer.Parent = Slider
+			SliderContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			SliderContainer.BackgroundTransparency = UISettings.BackgroundTransparency
+			SliderContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			SliderContainer.BorderSizePixel = 4
+			SliderContainer.Position = UDim2.new(1.08290148, 0, 0, 0)
+			SliderContainer.Size = UDim2.new(0, 193, 0, 40)
+			SliderContainer.Visible = false
+
+			-- Hover area
+			Hover.Name = "Hover"
+			Hover.Parent = Slider
+			Hover.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Hover.BackgroundTransparency = 1.000
+			Hover.Size = UDim2.new(0, 209, 0, 32)
+
+			-- Slider elements
+			local Track = Instance.new("Frame")
+			local Fill = Instance.new("Frame")
+			local Thumb = Instance.new("Frame")
+			local MinLabel = Instance.new("TextLabel")
+			local MaxLabel = Instance.new("TextLabel")
+			local ValueInput = Instance.new("TextBox")
+
+			-- Track
+			Track.Name = "Track"
+			Track.Parent = SliderContainer
+			Track.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+			Track.BorderSizePixel = 0
+			Track.Position = UDim2.new(0.05, 0, 0.4, 0)
+			Track.Size = UDim2.new(0, 150, 0, 6)
+
+			-- Fill
+			Fill.Name = "Fill"
+			Fill.Parent = Track
+			Fill.BackgroundColor3 = UISettings.TextColor
+			Fill.BorderSizePixel = 0
+			Fill.Size = UDim2.new(0.5, 0, 1, 0)
+
+			-- Thumb
+			Thumb.Name = "Thumb"
+			Thumb.Parent = Track
+			Thumb.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Thumb.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Thumb.BorderSizePixel = 2
+			Thumb.Position = UDim2.new(0.5, -8, -0.5, 0)
+			Thumb.Size = UDim2.new(0, 16, 0, 16)
+			Thumb.ZIndex = 2
+
+			-- Min label
+			MinLabel.Name = "MinLabel"
+			MinLabel.Parent = SliderContainer
+			MinLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			MinLabel.BackgroundTransparency = 1.000
+			MinLabel.Position = UDim2.new(0.05, 0, 0.7, 0)
+			MinLabel.Size = UDim2.new(0, 30, 0, 15)
+			MinLabel.Font = Enum.Font.JosefinSans
+			MinLabel.Text = tostring(minValue)
+			MinLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			MinLabel.TextSize = 12
+			MinLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+			-- Max label
+			MaxLabel.Name = "MaxLabel"
+			MaxLabel.Parent = SliderContainer
+			MaxLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			MaxLabel.BackgroundTransparency = 1.000
+			MaxLabel.Position = UDim2.new(0.8, 0, 0.7, 0)
+			MaxLabel.Size = UDim2.new(0, 30, 0, 15)
+			MaxLabel.Font = Enum.Font.JosefinSans
+			MaxLabel.Text = tostring(maxValue)
+			MaxLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+			MaxLabel.TextSize = 12
+			MaxLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+			-- Value input
+			ValueInput.Name = "ValueInput"
+			ValueInput.Parent = SliderContainer
+			ValueInput.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+			ValueInput.BorderSizePixel = 1
+			ValueInput.Position = UDim2.new(0.65, 0, 0.1, 0)
+			ValueInput.Size = UDim2.new(0, 40, 0, 15)
+			ValueInput.Font = Enum.Font.JosefinSans
+			ValueInput.Text = tostring(defaultValue)
+			ValueInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+			ValueInput.TextSize = 12
+			ValueInput.ClearTextOnFocus = false
+
+			-- Current value state
+			local currentValue = defaultValue
+
+			-- Function to update slider appearance
+			local function updateSlider(value)
+				currentValue = math.clamp(value, minValue, maxValue)
+
+				-- Calculate fill percentage
+				local percentage = (currentValue - minValue) / (maxValue - minValue)
+				Fill.Size = UDim2.new(percentage, 0, 1, 0)
+				Thumb.Position = UDim2.new(percentage, -8, -0.5, 0)
+
+				-- Update displays
+				ValueLabel.Text = tostring(math.floor(currentValue))
+				ValueInput.Text = tostring(math.floor(currentValue))
+
+				-- Update fill color to match UI theme
+				Fill.BackgroundColor3 = UISettings.TextColor
+
+				-- Call callback
+				if callback then
+					pcall(callback, currentValue)
+				end
+			end
+
+			-- Initialize
+			updateSlider(defaultValue)
+
+			-- Click to open/close functionality
+			local isSliderOpen = false
+
+			Slider.MouseButton1Down:Connect(function()
+				if not isSliderOpen then
+					-- Close other dropdowns first
+					local allContainers = TabContainer:GetDescendants()
+					for _, element in pairs(allContainers) do
+						if element.Name == "SliderContainer" and element ~= SliderContainer then
+							element.Visible = false
+						end
+						if element.Name == "PickerContainer" then
+							element.Visible = false
+						end
+						if element.Name == "DropContainer" then
+							element.Visible = false
+							if element.Parent:FindFirstChild("TextColor3") then
+								element.Parent.TextColor3 = Color3.new(255, 255, 255)
+							end
+							if element.Parent:FindFirstChild("Arrow") then
+								element.Parent.Arrow.TextColor3 = Color3.new(255, 255, 255)
+							end
+						end
+					end
+
+					-- Open this one
+					SliderContainer.Visible = true
+					isSliderOpen = true
+					Slider.TextColor3 = UISettings.TextColor
+					Arrow.TextColor3 = UISettings.TextColor
+				else
+					-- Close this one
+					SliderContainer.Visible = false
+					isSliderOpen = false
+					Slider.TextColor3 = Color3.new(255, 255, 255)
+					Arrow.TextColor3 = Color3.new(255, 255, 255)
+				end
+			end)
+
+			-- Close slider when clicking elsewhere
+			local function closeSlider()
+				if isSliderOpen then
+					SliderContainer.Visible = false
+					isSliderOpen = false
+					Slider.TextColor3 = Color3.new(255, 255, 255)
+					Arrow.TextColor3 = Color3.new(255, 255, 255)
+				end
+			end
+
+			-- Close when clicking on other tabs
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") and child ~= Slider then
+					child.MouseButton1Down:Connect(closeSlider)
+				end
+			end
+
+			-- Slider track interaction
+			Track.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					local connection
+					connection = game:GetService("UserInputService").InputChanged:Connect(function(moveInput)
+						if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+							local xPos = math.clamp((moveInput.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X, 0, 1)
+							local value = minValue + (xPos * (maxValue - minValue))
+							updateSlider(value)
+						end
+					end)
+
+					game:GetService("UserInputService").InputEnded:Connect(function(endInput)
+						if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+							connection:Disconnect()
+						end
+					end)
+				end
+			end)
+
+			-- Thumb interaction
+			Thumb.InputBegan:Connect(function(input)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					local startPos = input.Position.X
+					local startValue = currentValue
+
+					local connection
+					connection = game:GetService("UserInputService").InputChanged:Connect(function(moveInput)
+						if moveInput.UserInputType == Enum.UserInputType.MouseMovement then
+							local deltaX = moveInput.Position.X - startPos
+							local deltaValue = (deltaX / Track.AbsoluteSize.X) * (maxValue - minValue)
+							local newValue = startValue + deltaValue
+							updateSlider(newValue)
+						end
+					end)
+
+					game:GetService("UserInputService").InputEnded:Connect(function(endInput)
+						if endInput.UserInputType == Enum.UserInputType.MouseButton1 then
+							connection:Disconnect()
+						end
+					end)
+				end
+			end)
+
+			-- Value input handler
+			ValueInput.FocusLost:Connect(function()
+				local num = tonumber(ValueInput.Text)
+				if num then
+					updateSlider(num)
+				else
+					ValueInput.Text = tostring(math.floor(currentValue))
+				end
+			end)
+
+			-- Hover functionality
+			Hover.MouseEnter:Connect(function()
+				if not isSliderOpen then
+					SliderContainer.Visible = true
+				end
+			end)
+
+			Hover.MouseLeave:Connect(function()
+				if not isSliderOpen then
+					SliderContainer.Visible = false
+				end
+			end)
+
+			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
+
+			return {
+				GetValue = function() return currentValue end,
+				SetValue = function(value)
+					updateSlider(value)
+				end,
+				SetRange = function(newMin, newMax)
+					minValue = newMin or minValue
+					maxValue = newMax or maxValue
+					MinLabel.Text = tostring(minValue)
+					MaxLabel.Text = tostring(maxValue)
+					updateSlider(math.clamp(currentValue, minValue, maxValue))
+				end
+			}
+		end
 
 		function tabFunctions:CreateColorPicker(buttonText, defaultColor, callback)
 			local ColorPicker = Instance.new("TextButton")
