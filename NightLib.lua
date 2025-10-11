@@ -265,7 +265,6 @@ function Rodus:CreateMain(title)
 			PickerContainer.Position = UDim2.new(1.08290148, 0, 0, 0)
 			PickerContainer.Size = UDim2.new(0, 193, 0, 80)
 			PickerContainer.Visible = false
-			PickerContainer.ZIndex = 10  -- Make sure it appears above other elements
 
 			-- Color picker elements
 			local HueSlider = Instance.new("Frame")
@@ -283,14 +282,12 @@ function Rodus:CreateMain(title)
 			HueSlider.BorderSizePixel = 1
 			HueSlider.Position = UDim2.new(0.8, 0, 0.1, 0)
 			HueSlider.Size = UDim2.new(0, 15, 0, 60)
-			HueSlider.ZIndex = 11
 
 			-- Hue gradient
 			HueBar.Name = "HueBar"
 			HueBar.Parent = HueSlider
 			HueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			HueBar.Size = UDim2.new(1, 0, 1, 0)
-			HueBar.ZIndex = 11
 
 			local hueUIGradient = Instance.new("UIGradient")
 			hueUIGradient.Parent = HueBar
@@ -303,7 +300,6 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
 			}
-			hueUIGradient.ZIndex = 11
 
 			-- Hue selector
 			HueSelector.Name = "HueSelector"
@@ -313,7 +309,6 @@ function Rodus:CreateMain(title)
 			HueSelector.BorderSizePixel = 2
 			HueSelector.Size = UDim2.new(1.2, 0, 0, 3)
 			HueSelector.Position = UDim2.new(-0.1, 0, 0, 0)
-			HueSelector.ZIndex = 12
 
 			-- Saturation/Brightness area
 			SaturationBrightness.Name = "SaturationBrightness"
@@ -322,7 +317,6 @@ function Rodus:CreateMain(title)
 			SaturationBrightness.BorderSizePixel = 1
 			SaturationBrightness.Position = UDim2.new(0.05, 0, 0.1, 0)
 			SaturationBrightness.Size = UDim2.new(0, 60, 0, 60)
-			SaturationBrightness.ZIndex = 11
 
 			local satBrightUIGradient1 = Instance.new("UIGradient")
 			satBrightUIGradient1.Parent = SaturationBrightness
@@ -331,7 +325,6 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 			}
-			satBrightUIGradient1.ZIndex = 11
 
 			local satBrightUIGradient2 = Instance.new("UIGradient")
 			satBrightUIGradient2.Parent = SaturationBrightness
@@ -339,7 +332,6 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
 			}
-			satBrightUIGradient2.ZIndex = 11
 
 			-- Saturation/Brightness selector
 			SaturationBrightnessSelector.Name = "SaturationBrightnessSelector"
@@ -349,7 +341,6 @@ function Rodus:CreateMain(title)
 			SaturationBrightnessSelector.BorderSizePixel = 1
 			SaturationBrightnessSelector.Size = UDim2.new(0, 6, 0, 6)
 			SaturationBrightnessSelector.Position = UDim2.new(0.5, -3, 0.5, -3)
-			SaturationBrightnessSelector.ZIndex = 12
 
 			-- Current color display
 			CurrentColor.Name = "CurrentColor"
@@ -358,7 +349,6 @@ function Rodus:CreateMain(title)
 			CurrentColor.BorderSizePixel = 1
 			CurrentColor.Position = UDim2.new(0.7, 0, 0.75, 0)
 			CurrentColor.Size = UDim2.new(0, 40, 0, 15)
-			CurrentColor.ZIndex = 11
 
 			-- Hex input
 			HexInput.Name = "HexInput"
@@ -372,7 +362,6 @@ function Rodus:CreateMain(title)
 			HexInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 			HexInput.TextSize = 12
 			HexInput.PlaceholderText = "#FFFFFF"
-			HexInput.ZIndex = 11
 
 			-- Function to convert Color3 to Hex
 			local function RGBToHex(color)
@@ -437,6 +426,15 @@ function Rodus:CreateMain(title)
 					for _, element in pairs(allContainers) do
 						if element.Name == "PickerContainer" and element ~= PickerContainer then
 							element.Visible = false
+						end
+						if element.Name == "DropContainer" then
+							element.Visible = false
+							if element.Parent:FindFirstChild("TextColor3") then
+								element.Parent.TextColor3 = Color3.new(255, 255, 255)
+							end
+							if element.Parent:FindFirstChild("Arrow") then
+								element.Parent.Arrow.TextColor3 = Color3.new(255, 255, 255)
+							end
 						end
 					end
 
