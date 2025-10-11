@@ -574,6 +574,7 @@ function Rodus:CreateMain(title)
 				KeyLabel.Text = tostring(currentKey.Name):gsub("^%l", string.upper)
 				ListeningLabel.Visible = false
 				KeyLabel.Visible = true
+				Keybind.TextColor3 = Color3.new(255, 255, 255)
 			end
 
 			-- Function to start listening for key press
@@ -590,7 +591,6 @@ function Rodus:CreateMain(title)
 					if input.UserInputType == Enum.UserInputType.Keyboard then
 						currentKey = input.KeyCode
 						updateKeyDisplay()
-						Keybind.TextColor3 = Color3.new(255, 255, 255)
 						isListening = false
 						connection:Disconnect()
 
@@ -600,19 +600,20 @@ function Rodus:CreateMain(title)
 					elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
 						-- Cancel if clicking elsewhere
 						updateKeyDisplay()
-						Keybind.TextColor3 = Color3.new(255, 255, 255)
 						isListening = false
 						connection:Disconnect()
 					end
 				end)
 
-				-- Cancel after 5 seconds if no key is pressed
-				delay(5, function()
+				-- Cancel after 5 seconds if no key is pressed (using task.wait instead of delay)
+				task.spawn(function()
+					task.wait(5)
 					if isListening then
 						updateKeyDisplay()
-						Keybind.TextColor3 = Color3.new(255, 255, 255)
 						isListening = false
-						connection:Disconnect()
+						if connection then
+							connection:Disconnect()
+						end
 					end
 				end)
 			end
@@ -631,7 +632,6 @@ function Rodus:CreateMain(title)
 
 				if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == currentKey then
 					-- This is where you'd trigger whatever the keybind is for
-					-- For example, if it's for a toggle, you'd toggle the state here
 					if callback then
 						pcall(callback, currentKey, true) -- Pass true to indicate it was triggered by key press
 					end
@@ -641,7 +641,9 @@ function Rodus:CreateMain(title)
 			-- Clean up connection when UI is destroyed
 			TabContainer.AncestryChanged:Connect(function()
 				if not TabContainer:IsDescendantOf(game) then
-					keyConnection:Disconnect()
+					if keyConnection then
+						keyConnection:Disconnect()
+					end
 				end
 			end)
 
