@@ -216,7 +216,6 @@ function Rodus:CreateMain(title)
 			local Arrow = Instance.new("TextButton")
 			local ColorPreview = Instance.new("Frame")
 			local PickerContainer = Instance.new("Frame")
-			local Hover = Instance.new("Frame")
 
 			-- Default color
 			defaultColor = defaultColor or Color3.fromRGB(255, 255, 255)
@@ -266,13 +265,7 @@ function Rodus:CreateMain(title)
 			PickerContainer.Position = UDim2.new(1.08290148, 0, 0, 0)
 			PickerContainer.Size = UDim2.new(0, 193, 0, 80)
 			PickerContainer.Visible = false
-
-			-- Hover area
-			Hover.Name = "Hover"
-			Hover.Parent = ColorPicker
-			Hover.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-			Hover.BackgroundTransparency = 1.000
-			Hover.Size = UDim2.new(0, 209, 0, 32)
+			PickerContainer.ZIndex = 10  -- Make sure it appears above other elements
 
 			-- Color picker elements
 			local HueSlider = Instance.new("Frame")
@@ -290,12 +283,14 @@ function Rodus:CreateMain(title)
 			HueSlider.BorderSizePixel = 1
 			HueSlider.Position = UDim2.new(0.8, 0, 0.1, 0)
 			HueSlider.Size = UDim2.new(0, 15, 0, 60)
+			HueSlider.ZIndex = 11
 
 			-- Hue gradient
 			HueBar.Name = "HueBar"
 			HueBar.Parent = HueSlider
 			HueBar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 			HueBar.Size = UDim2.new(1, 0, 1, 0)
+			HueBar.ZIndex = 11
 
 			local hueUIGradient = Instance.new("UIGradient")
 			hueUIGradient.Parent = HueBar
@@ -308,6 +303,7 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0.83, Color3.fromRGB(255, 0, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 0))
 			}
+			hueUIGradient.ZIndex = 11
 
 			-- Hue selector
 			HueSelector.Name = "HueSelector"
@@ -317,6 +313,7 @@ function Rodus:CreateMain(title)
 			HueSelector.BorderSizePixel = 2
 			HueSelector.Size = UDim2.new(1.2, 0, 0, 3)
 			HueSelector.Position = UDim2.new(-0.1, 0, 0, 0)
+			HueSelector.ZIndex = 12
 
 			-- Saturation/Brightness area
 			SaturationBrightness.Name = "SaturationBrightness"
@@ -325,6 +322,7 @@ function Rodus:CreateMain(title)
 			SaturationBrightness.BorderSizePixel = 1
 			SaturationBrightness.Position = UDim2.new(0.05, 0, 0.1, 0)
 			SaturationBrightness.Size = UDim2.new(0, 60, 0, 60)
+			SaturationBrightness.ZIndex = 11
 
 			local satBrightUIGradient1 = Instance.new("UIGradient")
 			satBrightUIGradient1.Parent = SaturationBrightness
@@ -333,6 +331,7 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255))
 			}
+			satBrightUIGradient1.ZIndex = 11
 
 			local satBrightUIGradient2 = Instance.new("UIGradient")
 			satBrightUIGradient2.Parent = SaturationBrightness
@@ -340,6 +339,7 @@ function Rodus:CreateMain(title)
 				ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),
 				ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
 			}
+			satBrightUIGradient2.ZIndex = 11
 
 			-- Saturation/Brightness selector
 			SaturationBrightnessSelector.Name = "SaturationBrightnessSelector"
@@ -349,6 +349,7 @@ function Rodus:CreateMain(title)
 			SaturationBrightnessSelector.BorderSizePixel = 1
 			SaturationBrightnessSelector.Size = UDim2.new(0, 6, 0, 6)
 			SaturationBrightnessSelector.Position = UDim2.new(0.5, -3, 0.5, -3)
+			SaturationBrightnessSelector.ZIndex = 12
 
 			-- Current color display
 			CurrentColor.Name = "CurrentColor"
@@ -357,6 +358,7 @@ function Rodus:CreateMain(title)
 			CurrentColor.BorderSizePixel = 1
 			CurrentColor.Position = UDim2.new(0.7, 0, 0.75, 0)
 			CurrentColor.Size = UDim2.new(0, 40, 0, 15)
+			CurrentColor.ZIndex = 11
 
 			-- Hex input
 			HexInput.Name = "HexInput"
@@ -370,6 +372,7 @@ function Rodus:CreateMain(title)
 			HexInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 			HexInput.TextSize = 12
 			HexInput.PlaceholderText = "#FFFFFF"
+			HexInput.ZIndex = 11
 
 			-- Function to convert Color3 to Hex
 			local function RGBToHex(color)
@@ -419,19 +422,56 @@ function Rodus:CreateMain(title)
 			end
 
 			-- Initialize
-			updateColor(0, 1, 1)
+			local h, s, v = defaultColor:ToHSV()
+			updateColor(h, s, v)
+			HueSelector.Position = UDim2.new(-0.1, 0, 1 - h, 0)
+			SaturationBrightnessSelector.Position = UDim2.new(s, -3, 1 - v, -3)
 
-			-- Hover functionality
-			Hover.MouseEnter:Connect(function()
-				PickerContainer.Visible = true
+			-- Click to open/close functionality (like other dropdowns)
+			local isColorPickerOpen = false
+
+			ColorPicker.MouseButton1Down:Connect(function()
+				if not isColorPickerOpen then
+					-- Close other dropdowns first
+					local allContainers = TabContainer:GetDescendants()
+					for _, element in pairs(allContainers) do
+						if element.Name == "PickerContainer" and element ~= PickerContainer then
+							element.Visible = false
+						end
+					end
+
+					-- Open this one
+					PickerContainer.Visible = true
+					isColorPickerOpen = true
+					ColorPicker.TextColor3 = UISettings.TextColor
+					Arrow.TextColor3 = UISettings.TextColor
+				else
+					-- Close this one
+					PickerContainer.Visible = false
+					isColorPickerOpen = false
+					ColorPicker.TextColor3 = Color3.new(255, 255, 255)
+					Arrow.TextColor3 = Color3.new(255, 255, 255)
+				end
 			end)
 
-			Hover.MouseLeave:Connect(function()
-				PickerContainer.Visible = false
-			end)
+			-- Close color picker when clicking elsewhere
+			local function closeColorPicker()
+				if isColorPickerOpen then
+					PickerContainer.Visible = false
+					isColorPickerOpen = false
+					ColorPicker.TextColor3 = Color3.new(255, 255, 255)
+					Arrow.TextColor3 = Color3.new(255, 255, 255)
+				end
+			end
+
+			-- Close when clicking on other tabs
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") and child ~= ColorPicker then
+					child.MouseButton1Down:Connect(closeColorPicker)
+				end
+			end
 
 			-- Hue slider interaction
-			local hueConnection
 			HueSlider.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					local connection
@@ -453,7 +493,6 @@ function Rodus:CreateMain(title)
 			end)
 
 			-- Saturation/Brightness interaction
-			local satBrightConnection
 			SaturationBrightness.InputBegan:Connect(function(input)
 				if input.UserInputType == Enum.UserInputType.MouseButton1 then
 					local connection
@@ -491,13 +530,6 @@ function Rodus:CreateMain(title)
 				else
 					HexInput.Text = RGBToHex(currentColor)
 				end
-			end)
-
-			-- Button click
-			ColorPicker.MouseButton1Down:Connect(function()
-				ColorPicker.TextColor3 = UISettings.TextColor
-				task.wait(0.05)
-				ColorPicker.TextColor3 = Color3.new(255, 255, 255)
 			end)
 
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
