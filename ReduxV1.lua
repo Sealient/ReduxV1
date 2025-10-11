@@ -519,6 +519,146 @@ function Rodus:CreateMain(title)
 				end
 			}
 		end
+		
+		function tabFunctions:CreateKeybind(buttonText, defaultKey, callback)
+			local Keybind = Instance.new("TextButton")
+			local KeyLabel = Instance.new("TextLabel")
+			local ListeningLabel = Instance.new("TextLabel")
+
+			-- Default key
+			defaultKey = defaultKey or Enum.KeyCode.RightControl
+			local currentKey = defaultKey
+			local isListening = false
+
+			-- Main button
+			Keybind.Name = buttonText
+			Keybind.Parent = TabContainer
+			Keybind.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Keybind.BackgroundTransparency = 1.000
+			Keybind.Size = UDim2.new(0, 193, 0, 24)
+			Keybind.Font = Enum.Font.JosefinSans
+			Keybind.Text = " "..buttonText
+			Keybind.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Keybind.TextSize = UISettings.TextSize
+			Keybind.TextXAlignment = Enum.TextXAlignment.Left
+
+			-- Key display label
+			KeyLabel.Name = "KeyLabel"
+			KeyLabel.Parent = Keybind
+			KeyLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			KeyLabel.BackgroundTransparency = 1.000
+			KeyLabel.Position = UDim2.new(0.7, 0, 0, 0)
+			KeyLabel.Size = UDim2.new(0, 60, 0, 24)
+			KeyLabel.Font = Enum.Font.JosefinSans
+			KeyLabel.Text = tostring(defaultKey.Name):gsub("^%l", string.upper)
+			KeyLabel.TextColor3 = UISettings.TextColor
+			KeyLabel.TextSize = UISettings.TextSize
+			KeyLabel.TextXAlignment = Enum.TextXAlignment.Right
+
+			-- Listening indicator
+			ListeningLabel.Name = "ListeningLabel"
+			ListeningLabel.Parent = Keybind
+			ListeningLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			ListeningLabel.BackgroundTransparency = 1.000
+			ListeningLabel.Position = UDim2.new(0.7, 0, 0, 0)
+			ListeningLabel.Size = UDim2.new(0, 60, 0, 24)
+			ListeningLabel.Font = Enum.Font.JosefinSans
+			ListeningLabel.Text = "Listening..."
+			ListeningLabel.TextColor3 = Color3.fromRGB(255, 255, 0)  -- Yellow
+			ListeningLabel.TextSize = UISettings.TextSize
+			ListeningLabel.TextXAlignment = Enum.TextXAlignment.Right
+			ListeningLabel.Visible = false
+
+			-- Function to update key display
+			local function updateKeyDisplay()
+				KeyLabel.Text = tostring(currentKey.Name):gsub("^%l", string.upper)
+				ListeningLabel.Visible = false
+				KeyLabel.Visible = true
+			end
+
+			-- Function to start listening for key press
+			local function startListening()
+				isListening = true
+				KeyLabel.Visible = false
+				ListeningLabel.Visible = true
+				Keybind.TextColor3 = UISettings.TextColor
+
+				local connection
+				connection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+					if gameProcessed then return end
+
+					if input.UserInputType == Enum.UserInputType.Keyboard then
+						currentKey = input.KeyCode
+						updateKeyDisplay()
+						Keybind.TextColor3 = Color3.new(255, 255, 255)
+						isListening = false
+						connection:Disconnect()
+
+						if callback then
+							pcall(callback, currentKey)
+						end
+					elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
+						-- Cancel if clicking elsewhere
+						updateKeyDisplay()
+						Keybind.TextColor3 = Color3.new(255, 255, 255)
+						isListening = false
+						connection:Disconnect()
+					end
+				end)
+
+				-- Cancel after 5 seconds if no key is pressed
+				delay(5, function()
+					if isListening then
+						updateKeyDisplay()
+						Keybind.TextColor3 = Color3.new(255, 255, 255)
+						isListening = false
+						connection:Disconnect()
+					end
+				end)
+			end
+
+			-- Button click to start listening
+			Keybind.MouseButton1Down:Connect(function()
+				if not isListening then
+					startListening()
+				end
+			end)
+
+			-- Key detection for the actual toggle functionality
+			local keyConnection
+			keyConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+				if gameProcessed then return end
+
+				if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == currentKey then
+					-- This is where you'd trigger whatever the keybind is for
+					-- For example, if it's for a toggle, you'd toggle the state here
+					if callback then
+						pcall(callback, currentKey, true) -- Pass true to indicate it was triggered by key press
+					end
+				end
+			end)
+
+			-- Clean up connection when UI is destroyed
+			TabContainer.AncestryChanged:Connect(function()
+				if not TabContainer:IsDescendantOf(game) then
+					keyConnection:Disconnect()
+				end
+			end)
+
+			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
+
+			return {
+				GetKey = function() return currentKey end,
+				SetKey = function(newKey)
+					currentKey = newKey or currentKey
+					updateKeyDisplay()
+					if callback then
+						pcall(callback, currentKey)
+					end
+				end,
+				IsListening = function() return isListening end
+			}
+		end
 
 		function tabFunctions:CreateColorPicker(buttonText, defaultColor, callback)
 			local ColorPicker = Instance.new("TextButton")
