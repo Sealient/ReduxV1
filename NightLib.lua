@@ -1,40 +1,9 @@
--- Rodus UI Library - Executor Ready
+-- Rodus UI Library
 local Rodus = {}
 
--- Default theme settings
-local defaultSettings = {
-	MainColor = Color3.fromRGB(0, 255, 0),
-	BackgroundTransparency = 0.5,
-	TextColor = Color3.fromRGB(255, 255, 255),
-	Font = Enum.Font.JosefinSans,
-	TextSize = 14,
-	AnimationSpeed = 0.3
-}
-
--- Safe wait function for executors
-local function safeWait(duration)
-	if duration and duration > 0 then
-		local endTime = os.clock() + duration
-		while os.clock() < endTime do end
-	end
-end
-
--- Safe instance creation
-local function createInstance(className, properties)
-	local instance = Instance.new(className)
-	for property, value in pairs(properties or {}) do
-		pcall(function()
-			instance[property] = value
-		end)
-	end
-	return instance
-end
-
 function Rodus:CreateMain(title)
-	-- Get CoreGui safely for executors
-	local coreGui = game:GetService("CoreGui")
 	local player = game.Players.LocalPlayer
-	local parent = coreGui -- Use CoreGui for executors
+	local parent = player:WaitForChild("PlayerGui")
 	
 	-- Destroy existing UI with same name
 	local destroyIfExist = parent:GetChildren()
@@ -45,277 +14,196 @@ function Rodus:CreateMain(title)
 		end
 	end
 
-	-- Current settings (start with defaults)
-	local currentSettings = {}
-	for k, v in pairs(defaultSettings) do
-		currentSettings[k] = v
-	end
-	
 	-- Main UI Instances
-	local Rodus = createInstance("ScreenGui", {
-		Name = tostring(title),
-		Parent = parent,
-		ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-	})
+	local Rodus = Instance.new("ScreenGui")
+	local Top = Instance.new("Frame")
+	local Title = Instance.new("TextLabel")
+	local Container = Instance.new("Frame")
+	local UIListLayout = Instance.new("UIListLayout")
+	local Minimize = Instance.new("TextButton")
 
-	local Top = createInstance("Frame", {
-		Name = "Top",
-		Parent = Rodus,
-		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-		BackgroundTransparency = currentSettings.BackgroundTransparency,
-		BorderColor3 = Color3.fromRGB(0, 0, 0),
-		BorderSizePixel = 4,
-		Position = UDim2.new(0, 15, 0, 15),
-		Size = UDim2.new(0, 193, 0, 27)
-	})
+	-- ScreenGui Setup
+	Rodus.Name = tostring(title)
+	Rodus.Parent = parent
+	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-	local Title = createInstance("TextLabel", {
-		Name = "Title",
-		Parent = Top,
-		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-		BackgroundTransparency = 0.350,
-		BorderSizePixel = 0,
-		Size = UDim2.new(0, 193, 0, 27),
-		Font = currentSettings.Font,
-		Text = " "..title,
-		TextColor3 = currentSettings.MainColor,
-		TextSize = currentSettings.TextSize,
-		TextXAlignment = Enum.TextXAlignment.Left
-	})
+	-- Top Frame
+	Top.Name = "Top"
+	Top.Parent = Rodus
+	Top.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Top.BackgroundTransparency = 0.500
+	Top.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Top.BorderSizePixel = 4
+	Top.Position = UDim2.new(0, 15, 0, 15)
+	Top.Size = UDim2.new(0, 193, 0, 27)
 
-	local Container = createInstance("Frame", {
-		Name = "Container",
-		Parent = Top,
-		BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-		BackgroundTransparency = currentSettings.BackgroundTransparency,
-		BorderColor3 = Color3.fromRGB(0, 0, 0),
-		BorderSizePixel = 4,
-		Position = UDim2.new(0, 0, 1.29629624, 0),
-		Size = UDim2.new(0, 193, 0, 24)
-	})
+	-- Title
+	Title.Name = "Title"
+	Title.Parent = Top
+	Title.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Title.BackgroundTransparency = 0.350
+	Title.BorderSizePixel = 0
+	Title.Size = UDim2.new(0, 193, 0, 27)
+	Title.Font = Enum.Font.JosefinSans
+	Title.Text = " "..title
+	Title.TextColor3 = Color3.fromRGB(0, 255, 0)
+	Title.TextSize = 14.000
+	Title.TextXAlignment = Enum.TextXAlignment.Left
 
-	local UIListLayout = createInstance("UIListLayout", {
-		Parent = Container,
-		SortOrder = Enum.SortOrder.LayoutOrder
-	})
+	-- Container
+	Container.Name = "Container"
+	Container.Parent = Top
+	Container.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+	Container.BackgroundTransparency = 0.500
+	Container.BorderColor3 = Color3.fromRGB(0, 0, 0)
+	Container.BorderSizePixel = 4
+	Container.Position = UDim2.new(0, 0, 1.29629624, 0)
+	Container.Size = UDim2.new(0, 193, 0, 24)
 
-	local Minimize = createInstance("TextButton", {
-		Name = "Minimize",
-		Parent = Top,
-		BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-		BackgroundTransparency = 1.000,
-		Position = UDim2.new(0.906735778, 0, 0.185185179, 0),
-		Size = UDim2.new(0, 18, 0, 17),
-		Font = Enum.Font.SourceSans,
-		Text = "-",
-		TextColor3 = currentSettings.TextColor,
-		TextSize = 14.000
-	})
+	UIListLayout.Parent = Container
+	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
-	-- Track created tabs to ensure Settings is last
-	local createdTabs = {}
-	local settingsTabCreated = false
-
-	-- Apply settings function
-	local function applySettings()
-		-- Apply to main UI
-		Top.BackgroundTransparency = currentSettings.BackgroundTransparency
-		Title.TextColor3 = currentSettings.MainColor
-		Title.Font = currentSettings.Font
-		Title.TextSize = currentSettings.TextSize
-		
-		-- Apply to all existing elements
-		local function applyToDescendants(parentObj)
-			for _, child in pairs(parentObj:GetDescendants()) do
-				if child:IsA("TextLabel") or child:IsA("TextButton") or child:IsA("TextBox") then
-					pcall(function() child.Font = currentSettings.Font end)
-					pcall(function() child.TextSize = currentSettings.TextSize end)
-					
-					if child:IsA("TextLabel") and child.Name == "Title" then
-						pcall(function() child.TextColor3 = currentSettings.MainColor end)
-					elseif child:IsA("TextButton") and child.Parent == Container then
-						if child.TextColor3 == Color3.new(0, 255, 0) or child.TextColor3 == defaultSettings.MainColor then
-							pcall(function() child.TextColor3 = currentSettings.MainColor end)
-						else
-							pcall(function() child.TextColor3 = currentSettings.TextColor end)
-						end
-					elseif child:IsA("TextLabel") and child.Name == "Note" then
-						pcall(function() child.TextColor3 = currentSettings.MainColor end)
-					else
-						pcall(function() child.TextColor3 = currentSettings.TextColor end)
-					end
-				end
-				
-				if child:IsA("Frame") then
-					pcall(function() child.BackgroundTransparency = currentSettings.BackgroundTransparency end)
-				end
-			end
-		end
-		
-		applyToDescendants(Rodus)
-	end
-
-	-- Animation function
-	local function animateContainer(visible)
-		local duration = currentSettings.AnimationSpeed
-		
-		if visible then
-			-- Opening animation
-			Container.Visible = true
-			Container.Size = UDim2.new(0, 193, 0, 0)
-			
-			local targetHeight = UIListLayout.AbsoluteContentSize.Y
-			local steps = 10
-			local stepTime = duration / steps
-			
-			for i = 1, steps do
-				Container.Size = UDim2.new(0, 193, 0, (targetHeight / steps) * i)
-				safeWait(stepTime)
-			end
-			Container.Size = UDim2.new(0, 193, 0, targetHeight)
-		else
-			-- Closing animation
-			local startHeight = Container.Size.Y.Offset
-			local steps = 10
-			local stepTime = duration / steps
-			
-			for i = steps, 1, -1 do
-				Container.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-				safeWait(stepTime)
-			end
-			Container.Size = UDim2.new(0, 193, 0, 0)
-			Container.Visible = false
-		end
-	end
-
-	-- Minimize functionality with animations
+	-- Minimize Button
+	Minimize.Name = "Minimize"
+	Minimize.Parent = Top
+	Minimize.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	Minimize.BackgroundTransparency = 1.000
+	Minimize.Position = UDim2.new(0.906735778, 0, 0.185185179, 0)
+	Minimize.Size = UDim2.new(0, 18, 0, 17)
+	Minimize.Font = Enum.Font.SourceSans
+	Minimize.Text = "-"
+	Minimize.TextColor3 = Color3.fromRGB(255, 255, 255)
+	Minimize.TextSize = 14.000
+	
+	-- Minimize functionality
 	local tog_gled = false
 	Minimize.MouseButton1Down:Connect(function()
 		tog_gled = not tog_gled
 		if tog_gled then 
-			Minimize.Text = "+"
-			animateContainer(false)
+			Minimize.Text = "+" 
+			Container.Visible = false 
 		else 
-			Minimize.Text = "-"
-			animateContainer(true)
+			Minimize.Text = "-" 
+			Container.Visible = true 
 		end
 	end)
 
 	-- Toggle visibility with RightControl
 	local function onKeyPress(inputObject, gameProcessedEvent)
-		if not gameProcessedEvent and inputObject.KeyCode == Enum.KeyCode.RightControl then
+		if inputObject.KeyCode == Enum.KeyCode.RightControl then
 			Top.Visible = not Top.Visible
 		end
 	end
 	game:GetService("UserInputService").InputBegan:Connect(onKeyPress)
 
+	-- Store UI customization settings
+	local UISettings = {
+		BackgroundTransparency = 0.5,
+		TextColor = Color3.fromRGB(0, 255, 0),
+		BackgroundColor = Color3.fromRGB(0, 0, 0),
+		TextSize = 14,
+		Enabled = true
+	}
+
+	-- Function to apply UI settings
+	local function applyUISettings()
+		Top.BackgroundTransparency = UISettings.BackgroundTransparency
+		Container.BackgroundTransparency = UISettings.BackgroundTransparency
+		Title.TextColor3 = UISettings.TextColor
+		Title.TextSize = UISettings.TextSize
+		
+		-- Apply to all tabs and elements
+		for _, child in pairs(Container:GetChildren()) do
+			if child:IsA("TextButton") then
+				child.TextSize = UISettings.TextSize
+				if child:FindFirstChild("Arrow") then
+					child.Arrow.TextSize = UISettings.TextSize
+				end
+			end
+		end
+	end
+
 	-- UI Functions
 	local uiFunctions = {}
+	local customTabs = {} -- Store custom tabs to maintain order
 
 	function uiFunctions:CreateTab(text)
-		-- Don't allow creating Settings tab manually
-		if string.lower(text) == "settings" then
-			error("Settings tab is automatically created as the last tab")
-			return
-		end
-		
-		local Tab = createInstance("TextButton", {
-			Name = text,
-			Parent = Container,
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-			BackgroundTransparency = 1.000,
-			Size = UDim2.new(0, 193, 0, 24),
-			Font = currentSettings.Font,
-			Text = " "..text,
-			TextColor3 = currentSettings.TextColor,
-			TextSize = currentSettings.TextSize,
-			TextXAlignment = Enum.TextXAlignment.Left
-		})
+		local Tab = Instance.new("TextButton")
+		local Arrow = Instance.new("TextLabel")
 
-		local Arrow = createInstance("TextLabel", {
-			Name = "Arrow",
-			Parent = Tab,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 1.000,
-			Position = UDim2.new(0.907, 0, 0, 0),
-			Size = UDim2.new(0, 18, 0, 21),
-			Font = Enum.Font.SourceSans,
-			Text = ">>",
-			TextColor3 = currentSettings.TextColor,
-			TextScaled = true,
-			TextSize = 14.000,
-			TextWrapped = true
-		})
+		Tab.Name = text
+		Tab.Parent = Container
+		Tab.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		Tab.BackgroundTransparency = 1.000
+		Tab.Size = UDim2.new(0, 193, 0, 24)
+		Tab.Font = Enum.Font.JosefinSans
+		Tab.Text = " "..text
+		Tab.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Tab.TextSize = UISettings.TextSize
+		Tab.TextXAlignment = Enum.TextXAlignment.Left
+
+		Arrow.Name = "Arrow"
+		Arrow.Parent = Tab
+		Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.BackgroundTransparency = 1.000
+		Arrow.Position = UDim2.new(0.907, 0, 0, 0)
+		Arrow.Size = UDim2.new(0, 18, 0, 21)
+		Arrow.Font = Enum.Font.SourceSans
+		Arrow.Text = ">>"
+		Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.TextScaled = true
+		Arrow.TextSize = UISettings.TextSize
+		Arrow.TextWrapped = true
 		
 		-- Update container size
 		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
 		
 		-- Tab Container
-		local TabContainer = createInstance("Frame", {
-			Name = "TabContainer",
-			Parent = Tab,
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-			BackgroundTransparency = currentSettings.BackgroundTransparency,
-			BorderColor3 = Color3.fromRGB(0, 0, 0),
-			BorderSizePixel = 4,
-			Position = UDim2.new(1.0569948, 0, 0, 0),
-			Visible = false
-		})
+		local TabContainer = Instance.new("Frame")
+		TabContainer.Name = "TabContainer"
+		TabContainer.Parent = Tab
+		TabContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		TabContainer.BackgroundTransparency = UISettings.BackgroundTransparency
+		TabContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		TabContainer.BorderSizePixel = 4
+		TabContainer.Position = UDim2.new(1.0569948, 0, 0, 0)
+		TabContainer.Visible = false
 		
-		local UIListLayout2 = createInstance("UIListLayout", {
-			Parent = TabContainer,
-			SortOrder = Enum.SortOrder.LayoutOrder
-		})
+		local UIListLayout2 = Instance.new("UIListLayout")
+		UIListLayout2.Parent = TabContainer
+		UIListLayout2.SortOrder = Enum.SortOrder.LayoutOrder
 
-		-- Tab click functionality with animation
+		-- Tab click functionality
 		Tab.MouseButton1Down:Connect(function()
-			local isCurrentlyOpen = TabContainer.Visible
-			local duration = currentSettings.AnimationSpeed
+			-- Check if this tab is currently open
+			local wasOpen = TabContainer.Visible
 			
-			-- Close ALL tab containers and reset ALL colors first
-			local allTabs = Container:GetDescendants()
-			for _, element in pairs(allTabs) do
-				if element.Name == "TabContainer" and element.Visible then
-					-- Animate closing
-					local startHeight = element.Size.Y.Offset
-					local steps = 8
-					local stepTime = duration / steps
+			-- First, reset EVERY tab to white and close their containers
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") then
+					-- Reset text color to white
+					child.TextColor3 = Color3.new(255, 255, 255)
 					
-					for i = steps, 1, -1 do
-						element.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-						safeWait(stepTime)
+					-- Reset arrow color to white if it exists
+					local arrow = child:FindFirstChild("Arrow")
+					if arrow then
+						arrow.TextColor3 = Color3.new(255, 255, 255)
 					end
-					element.Visible = false
-					element.Size = UDim2.new(0, 193, 0, 0)
-				end
-				
-				if element:IsA("TextButton") and element.Parent == Container then
-					element.TextColor3 = currentSettings.TextColor
-					if element:FindFirstChild("Arrow") then
-						element.Arrow.TextColor3 = currentSettings.TextColor
+					
+					-- Close the tab container
+					local tabContainer = child:FindFirstChild("TabContainer")
+					if tabContainer then
+						tabContainer.Visible = false
 					end
 				end
 			end
 			
-			-- If this tab wasn't open before, open it with animation
-			if not isCurrentlyOpen then
+			-- If this tab wasn't open before, open it and set to green
+			if not wasOpen then
 				TabContainer.Visible = true
-				TabContainer.Size = UDim2.new(0, 193, 0, 0)
-				
-				safeWait(0.01) -- Small delay for layout calculation
-				local targetHeight = UIListLayout2.AbsoluteContentSize.Y
-				local steps = 10
-				local stepTime = duration / steps
-				
-				for i = 1, steps do
-					TabContainer.Size = UDim2.new(0, 193, 0, (targetHeight / steps) * i)
-					safeWait(stepTime)
-				end
-				TabContainer.Size = UDim2.new(0, 193, 0, targetHeight)
-				
-				Tab.TextColor3 = currentSettings.MainColor
-				if Tab:FindFirstChild("Arrow") then
-					Tab.Arrow.TextColor3 = currentSettings.MainColor
+				Tab.TextColor3 = UISettings.TextColor
+				if Tab.Arrow then
+					Tab.Arrow.TextColor3 = UISettings.TextColor
 				end
 			end
 		end)
@@ -324,43 +212,42 @@ function Rodus:CreateMain(title)
 		local tabFunctions = {}
 
 		function tabFunctions:CreateButton(buttonText, note, callback)
-			local Button = createInstance("TextButton", {
-				Name = buttonText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..buttonText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+			local Button = Instance.new("TextButton")
+			local Note = Instance.new("TextLabel")
 
-			local Note = createInstance("TextLabel", {
-				Name = "Note",
-				Parent = Button,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(1.04145074, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = note or "",
-				TextColor3 = currentSettings.MainColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				Visible = false
-			})
-			
+			Button.Name = buttonText
+			Button.Parent = TabContainer
+			Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Button.BackgroundTransparency = 1.000
+			Button.Size = UDim2.new(0, 193, 0, 24)
+			Button.Font = Enum.Font.JosefinSans
+			Button.Text = " "..buttonText
+			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Button.TextSize = UISettings.TextSize
+			Button.TextXAlignment = Enum.TextXAlignment.Left
+
 			Button.MouseButton1Down:Connect(function()
-				Button.TextColor3 = currentSettings.MainColor
-				safeWait(0.05)
-				Button.TextColor3 = currentSettings.TextColor
+				Button.TextColor3 = UISettings.TextColor
+				task.wait(0.05)
+				Button.TextColor3 = Color3.new(255, 255, 255)
 				if callback then
 					pcall(callback)
 				end
 			end)
 
+			Note.Name = "Note"
+			Note.Parent = Button
+			Note.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Note.BackgroundTransparency = 1.000
+			Note.Position = UDim2.new(1.04145074, 0, 0, 0)
+			Note.Size = UDim2.new(0, 193, 0, 24)
+			Note.Font = Enum.Font.JosefinSans
+			Note.Text = note or ""
+			Note.TextColor3 = UISettings.TextColor
+			Note.TextSize = UISettings.TextSize
+			Note.TextXAlignment = Enum.TextXAlignment.Left
+			Note.Visible = false
+			
 			Button.MouseEnter:Connect(function()
 				Note.Visible = true
 			end)
@@ -374,76 +261,78 @@ function Rodus:CreateMain(title)
 		end
 
 		function tabFunctions:CreateLabel(labelText, color3)
-			local Label = createInstance("TextLabel", {
-				Name = labelText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..labelText,
-				TextColor3 = color3 or currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+			local Label = Instance.new("TextLabel")
+
+			Label.Name = labelText
+			Label.Parent = TabContainer
+			Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Label.BackgroundTransparency = 1.000
+			Label.Size = UDim2.new(0, 193, 0, 24)
+			Label.Font = Enum.Font.JosefinSans
+			Label.Text = " "..labelText
+			Label.TextColor3 = color3 or Color3.fromRGB(255, 255, 255)
+			Label.TextSize = UISettings.TextSize
+			Label.TextXAlignment = Enum.TextXAlignment.Left
 			
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
 		end
 
 		function tabFunctions:CreateToggle(buttonText, note, callback)
-			local Button = createInstance("TextButton", {
-				Name = buttonText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..buttonText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+			local Button = Instance.new("TextButton")
+			local Note = Instance.new("TextLabel")
+			local Toggle = Instance.new("BoolValue")
+			
+			Button.Name = buttonText
+			Button.Parent = TabContainer
+			Toggle.Parent = Button
+			Toggle.Name = "Toggled"
+			Toggle.Value = false
 
-			local Toggle = createInstance("BoolValue", {
-				Parent = Button,
-				Name = "Toggled",
-				Value = false
-			})
-
-			local Note = createInstance("TextLabel", {
-				Name = "Note",
-				Parent = Button,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(1.04145074, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = note or "",
-				TextColor3 = currentSettings.MainColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				Visible = false
-			})
+			Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Button.BackgroundTransparency = 1.000
+			Button.Size = UDim2.new(0, 193, 0, 24)
+			Button.Font = Enum.Font.JosefinSans
+			Button.Text = " "..buttonText
+			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Button.TextSize = UISettings.TextSize
+			Button.TextXAlignment = Enum.TextXAlignment.Left
 
 			Button.MouseEnter:Connect(function()
-				Note.Visible = true
+				if Note then
+					Note.Visible = true
+				end
 			end)
 
 			Button.MouseLeave:Connect(function()
-				Note.Visible = false
+				if Note then
+					Note.Visible = false
+				end
 			end)
 
 			Button.MouseButton1Down:Connect(function()
 				Toggle.Value = not Toggle.Value
 				if Toggle.Value then
-					Button.TextColor3 = currentSettings.MainColor
+					Button.TextColor3 = UISettings.TextColor
 				else
-					Button.TextColor3 = currentSettings.TextColor
+					Button.TextColor3 = Color3.new(255, 255, 255)
 				end
 				if callback then
 					pcall(callback, Toggle.Value)
 				end
 			end)
+
+			Note.Name = "Note"
+			Note.Parent = Button
+			Note.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Note.BackgroundTransparency = 1.000
+			Note.Position = UDim2.new(1.04145074, 0, 0, 0)
+			Note.Size = UDim2.new(0, 193, 0, 24)
+			Note.Font = Enum.Font.JosefinSans
+			Note.Text = note or ""
+			Note.TextColor3 = UISettings.TextColor
+			Note.TextSize = UISettings.TextSize
+			Note.TextXAlignment = Enum.TextXAlignment.Left
+			Note.Visible = false
 			
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
 			
@@ -451,134 +340,91 @@ function Rodus:CreateMain(title)
 		end
 
 		function tabFunctions:CreateSideDropButton(dropText, list, callback)
-			local SideDrop = createInstance("TextButton", {
-				Name = dropText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..dropText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+			local SideDrop = Instance.new("TextButton")
+			local Arrow = Instance.new("TextButton")
+			local DropContainer = Instance.new("Frame")
+			local DropUIListLayout = Instance.new("UIListLayout")
 
-			local Arrow = createInstance("TextButton", {
-				Name = "Arrow",
-				Parent = SideDrop,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(0.906735778, 0, 0, 0),
-				Size = UDim2.new(0, 18, 0, 21),
-				Font = Enum.Font.SourceSans,
-				Text = ">>",
-				TextColor3 = currentSettings.TextColor,
-				TextScaled = true,
-				TextSize = 14.000,
-				TextWrapped = true
-			})
+			SideDrop.Name = dropText
+			SideDrop.Parent = TabContainer
+			SideDrop.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			SideDrop.BackgroundTransparency = 1.000
+			SideDrop.Size = UDim2.new(0, 193, 0, 24)
+			SideDrop.Font = Enum.Font.JosefinSans
+			SideDrop.Text = " "..dropText
+			SideDrop.TextColor3 = Color3.fromRGB(255, 255, 255)
+			SideDrop.TextSize = UISettings.TextSize
+			SideDrop.TextXAlignment = Enum.TextXAlignment.Left
 
-			local DropContainer = createInstance("Frame", {
-				Name = "DropContainer",
-				Parent = SideDrop,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = currentSettings.BackgroundTransparency,
-				BorderColor3 = Color3.fromRGB(0, 0, 0),
-				BorderSizePixel = 4,
-				Position = UDim2.new(1.08290148, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 0),
-				Visible = false
-			})
+			Arrow.Name = "Arrow"
+			Arrow.Parent = SideDrop
+			Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.BackgroundTransparency = 1.000
+			Arrow.Position = UDim2.new(0.906735778, 0, 0, 0)
+			Arrow.Size = UDim2.new(0, 18, 0, 21)
+			Arrow.Font = Enum.Font.SourceSans
+			Arrow.Text = ">>"
+			Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.TextScaled = true
+			Arrow.TextSize = UISettings.TextSize
+			Arrow.TextWrapped = true
 
-			local DropUIListLayout = createInstance("UIListLayout", {
-				Parent = DropContainer,
-				SortOrder = Enum.SortOrder.LayoutOrder
-			})
+			DropContainer.Name = "DropContainer"
+			DropContainer.Parent = SideDrop
+			DropContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			DropContainer.BackgroundTransparency = UISettings.BackgroundTransparency
+			DropContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			DropContainer.BorderSizePixel = 4
+			DropContainer.Position = UDim2.new(1.08290148, 0, 0, 0)
+			DropContainer.Size = UDim2.new(0, 193, 0, 0)
+			DropContainer.Visible = false
 
-			-- Dropdown toggle with animation
+			DropUIListLayout.Parent = DropContainer
+			DropUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+			-- Dropdown toggle
 			SideDrop.MouseButton1Down:Connect(function()
 				local allDropContainers = TabContainer:GetDescendants()
-				local duration = currentSettings.AnimationSpeed
-				
-				-- Close other dropdowns with animation
 				for _, element in pairs(allDropContainers) do
-					if element.Name == "DropContainer" and element ~= DropContainer and element.Visible then
-						local startHeight = element.Size.Y.Offset
-						local steps = 6
-						local stepTime = duration / steps
-						
-						for i = steps, 1, -1 do
-							element.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-							safeWait(stepTime)
-						end
+					if element.Name == "DropContainer" and element ~= DropContainer then
 						element.Visible = false
-						element.Size = UDim2.new(0, 193, 0, 0)
-						
 						if element.Parent:FindFirstChild("TextColor3") then
-							element.Parent.TextColor3 = currentSettings.TextColor
+							element.Parent.TextColor3 = Color3.new(255, 255, 255)
 						end
 						if element.Parent:FindFirstChild("Arrow") then
-							element.Parent.Arrow.TextColor3 = currentSettings.TextColor
+							element.Parent.Arrow.TextColor3 = Color3.new(255, 255, 255)
 						end
 					end
 				end
 
-				-- Toggle current dropdown with animation
-				if not DropContainer.Visible then
-					DropContainer.Visible = true
-					DropContainer.Size = UDim2.new(0, 193, 0, 0)
-					
-					safeWait(0.01)
-					local targetHeight = DropUIListLayout.AbsoluteContentSize.Y
-					local steps = 8
-					local stepTime = duration / steps
-					
-					for i = 1, steps do
-						DropContainer.Size = UDim2.new(0, 193, 0, (targetHeight / steps) * i)
-						safeWait(stepTime)
-					end
-					DropContainer.Size = UDim2.new(0, 193, 0, targetHeight)
-					
-					SideDrop.TextColor3 = currentSettings.MainColor
-					Arrow.TextColor3 = currentSettings.MainColor
+				DropContainer.Visible = not DropContainer.Visible
+				if DropContainer.Visible then
+					SideDrop.TextColor3 = UISettings.TextColor
+					Arrow.TextColor3 = UISettings.TextColor
 				else
-					-- Animate closing
-					local startHeight = DropContainer.Size.Y.Offset
-					local steps = 6
-					local stepTime = duration / steps
-					
-					for i = steps, 1, -1 do
-						DropContainer.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-						safeWait(stepTime)
-					end
-					DropContainer.Visible = false
-					DropContainer.Size = UDim2.new(0, 193, 0, 0)
-					
-					SideDrop.TextColor3 = currentSettings.TextColor
-					Arrow.TextColor3 = currentSettings.TextColor
+					SideDrop.TextColor3 = Color3.new(255, 255, 255)
+					Arrow.TextColor3 = Color3.new(255, 255, 255)
 				end
 			end)
 
 			-- Create dropdown items
 			for _, option in pairs(list or {}) do
-				local Button = createInstance("TextButton", {
-					Name = option,
-					Parent = DropContainer,
-					BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-					BackgroundTransparency = 1.000,
-					Size = UDim2.new(0, 193, 0, 24),
-					Font = currentSettings.Font,
-					Text = " "..option,
-					TextColor3 = currentSettings.TextColor,
-					TextSize = currentSettings.TextSize,
-					TextXAlignment = Enum.TextXAlignment.Left
-				})
+				local Button = Instance.new("TextButton")
+				Button.Name = option
+				Button.Parent = DropContainer
+				Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+				Button.BackgroundTransparency = 1.000
+				Button.Size = UDim2.new(0, 193, 0, 24)
+				Button.Font = Enum.Font.JosefinSans
+				Button.Text = " "..option
+				Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+				Button.TextSize = UISettings.TextSize
+				Button.TextXAlignment = Enum.TextXAlignment.Left
 
 				Button.MouseButton1Down:Connect(function()
-					Button.TextColor3 = currentSettings.MainColor
-					safeWait(0.05)
-					Button.TextColor3 = currentSettings.TextColor
+					Button.TextColor3 = UISettings.TextColor
+					task.wait(0.05)
+					Button.TextColor3 = Color3.new(255, 255, 255)
 					if callback then
 						pcall(callback, option)
 					end
@@ -591,67 +437,63 @@ function Rodus:CreateMain(title)
 		end
 
 		function tabFunctions:CreateTextBox(buttonText, placeholderText, callback)
-			local TextBoxBtn = createInstance("TextButton", {
-				Name = buttonText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..buttonText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+			local TextBoxBtn = Instance.new("TextButton")
+			local Arrow = Instance.new("TextButton")
+			local Side = Instance.new("Frame")
+			local Box = Instance.new("TextBox")
+			local Hover = Instance.new("Frame")
 
-			local Arrow = createInstance("TextButton", {
-				Name = "Arrow",
-				Parent = TextBoxBtn,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(0.906735778, 0, 0, 0),
-				Size = UDim2.new(0, 18, 0, 21),
-				Font = Enum.Font.SourceSans,
-				Text = ">>",
-				TextColor3 = currentSettings.TextColor,
-				TextScaled = true,
-				TextSize = 14.000,
-				TextWrapped = true
-			})
+			TextBoxBtn.Name = buttonText
+			TextBoxBtn.Parent = TabContainer
+			TextBoxBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			TextBoxBtn.BackgroundTransparency = 1.000
+			TextBoxBtn.Size = UDim2.new(0, 193, 0, 24)
+			TextBoxBtn.Font = Enum.Font.JosefinSans
+			TextBoxBtn.Text = " "..buttonText
+			TextBoxBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+			TextBoxBtn.TextSize = UISettings.TextSize
+			TextBoxBtn.TextXAlignment = Enum.TextXAlignment.Left
 
-			local Side = createInstance("Frame", {
-				Name = "Side",
-				Parent = TextBoxBtn,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = currentSettings.BackgroundTransparency,
-				BorderColor3 = Color3.fromRGB(0, 0, 0),
-				BorderSizePixel = 4,
-				Position = UDim2.new(1.08290148, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 24),
-				Visible = false
-			})
+			Arrow.Name = "Arrow"
+			Arrow.Parent = TextBoxBtn
+			Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.BackgroundTransparency = 1.000
+			Arrow.Position = UDim2.new(0.906735778, 0, 0, 0)
+			Arrow.Size = UDim2.new(0, 18, 0, 21)
+			Arrow.Font = Enum.Font.SourceSans
+			Arrow.Text = ">>"
+			Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Arrow.TextScaled = true
+			Arrow.TextSize = UISettings.TextSize
+			Arrow.TextWrapped = true
 
-			local Box = createInstance("TextBox", {
-				Name = "Box",
-				Parent = Side,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = "",
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextWrapped = true,
-				PlaceholderText = placeholderText or "Enter text..."
-			})
+			Side.Name = "Side"
+			Side.Parent = TextBoxBtn
+			Side.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Side.BackgroundTransparency = UISettings.BackgroundTransparency
+			Side.BorderColor3 = Color3.fromRGB(0, 0, 0)
+			Side.BorderSizePixel = 4
+			Side.Position = UDim2.new(1.08290148, 0, 0, 0)
+			Side.Size = UDim2.new(0, 193, 0, 24)
+			Side.Visible = false
 
-			local Hover = createInstance("Frame", {
-				Name = "Hover",
-				Parent = TextBoxBtn,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 209, 0, 32)
-			})
+			Box.Name = "Box"
+			Box.Parent = Side
+			Box.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Box.BackgroundTransparency = 1.000
+			Box.Size = UDim2.new(0, 193, 0, 24)
+			Box.Font = Enum.Font.JosefinSans
+			Box.Text = ""
+			Box.TextColor3 = Color3.fromRGB(255, 255, 255)
+			Box.TextSize = UISettings.TextSize
+			Box.TextWrapped = true
+			Box.PlaceholderText = placeholderText or "Enter text..."
+
+			Hover.Name = "Hover"
+			Hover.Parent = TextBoxBtn
+			Hover.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			Hover.BackgroundTransparency = 1.000
+			Hover.Size = UDim2.new(0, 209, 0, 32)
 
 			-- Hover functionality
 			Hover.MouseEnter:Connect(function()
@@ -664,9 +506,9 @@ function Rodus:CreateMain(title)
 
 			-- Submit on button click
 			TextBoxBtn.MouseButton1Down:Connect(function()
-				TextBoxBtn.TextColor3 = currentSettings.MainColor
-				safeWait(0.05)
-				TextBoxBtn.TextColor3 = currentSettings.TextColor
+				TextBoxBtn.TextColor3 = UISettings.TextColor
+				task.wait(0.05)
+				TextBoxBtn.TextColor3 = Color3.new(255, 255, 255)
 				if callback then
 					pcall(callback, Box.Text)
 				end
@@ -682,393 +524,208 @@ function Rodus:CreateMain(title)
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
 		end
 
-		-- Store the tab
-		table.insert(createdTabs, {tab = Tab, functions = tabFunctions})
+		-- Store custom tabs for ordering
+		table.insert(customTabs, {Tab = Tab, Functions = tabFunctions})
 		
 		return tabFunctions
 	end
 
-	-- Function to create Settings tab (always last)
+	-- Create mandatory Settings tab (always last)
 	local function createSettingsTab()
-		if settingsTabCreated then return end
-		
-		-- Create Settings tab manually to ensure it's last
-		local SettingsTab = createInstance("TextButton", {
-			Name = "Settings",
-			Parent = Container,
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-			BackgroundTransparency = 1.000,
-			Size = UDim2.new(0, 193, 0, 24),
-			Font = currentSettings.Font,
-			Text = " Settings",
-			TextColor3 = currentSettings.TextColor,
-			TextSize = currentSettings.TextSize,
-			TextXAlignment = Enum.TextXAlignment.Left
-		})
+		local SettingsTab = Instance.new("TextButton")
+		local Arrow = Instance.new("TextLabel")
 
-		local Arrow = createInstance("TextLabel", {
-			Name = "Arrow",
-			Parent = SettingsTab,
-			BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-			BackgroundTransparency = 1.000,
-			Position = UDim2.new(0.907, 0, 0, 0),
-			Size = UDim2.new(0, 18, 0, 21),
-			Font = Enum.Font.SourceSans,
-			Text = ">>",
-			TextColor3 = currentSettings.TextColor,
-			TextScaled = true,
-			TextSize = 14.000,
-			TextWrapped = true
-		})
-		
-		local TabContainer = createInstance("Frame", {
-			Name = "TabContainer",
-			Parent = SettingsTab,
-			BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-			BackgroundTransparency = currentSettings.BackgroundTransparency,
-			BorderColor3 = Color3.fromRGB(0, 0, 0),
-			BorderSizePixel = 4,
-			Position = UDim2.new(1.0569948, 0, 0, 0),
-			Visible = false
-		})
-		
-		local UIListLayout2 = createInstance("UIListLayout", {
-			Parent = TabContainer,
-			SortOrder = Enum.SortOrder.LayoutOrder
-		})
+		SettingsTab.Name = "Settings"
+		SettingsTab.Parent = Container
+		SettingsTab.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		SettingsTab.BackgroundTransparency = 1.000
+		SettingsTab.Size = UDim2.new(0, 193, 0, 24)
+		SettingsTab.Font = Enum.Font.JosefinSans
+		SettingsTab.Text = " Settings"
+		SettingsTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+		SettingsTab.TextSize = UISettings.TextSize
+		SettingsTab.TextXAlignment = Enum.TextXAlignment.Left
 
-		-- Tab click functionality
+		Arrow.Name = "Arrow"
+		Arrow.Parent = SettingsTab
+		Arrow.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.BackgroundTransparency = 1.000
+		Arrow.Position = UDim2.new(0.907, 0, 0, 0)
+		Arrow.Size = UDim2.new(0, 18, 0, 21)
+		Arrow.Font = Enum.Font.SourceSans
+		Arrow.Text = ">>"
+		Arrow.TextColor3 = Color3.fromRGB(255, 255, 255)
+		Arrow.TextScaled = true
+		Arrow.TextSize = UISettings.TextSize
+		Arrow.TextWrapped = true
+		
+		-- Settings Tab Container
+		local SettingsContainer = Instance.new("Frame")
+		SettingsContainer.Name = "TabContainer"
+		SettingsContainer.Parent = SettingsTab
+		SettingsContainer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		SettingsContainer.BackgroundTransparency = UISettings.BackgroundTransparency
+		SettingsContainer.BorderColor3 = Color3.fromRGB(0, 0, 0)
+		SettingsContainer.BorderSizePixel = 4
+		SettingsContainer.Position = UDim2.new(1.0569948, 0, 0, 0)
+		SettingsContainer.Visible = false
+		
+		local SettingsUIListLayout = Instance.new("UIListLayout")
+		SettingsUIListLayout.Parent = SettingsContainer
+		SettingsUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+		-- Settings Tab click functionality
 		SettingsTab.MouseButton1Down:Connect(function()
-			local isCurrentlyOpen = TabContainer.Visible
-			local duration = currentSettings.AnimationSpeed
+			local wasOpen = SettingsContainer.Visible
 			
-			-- Close ALL tab containers and reset ALL colors first
-			local allTabs = Container:GetDescendants()
-			for _, element in pairs(allTabs) do
-				if element.Name == "TabContainer" and element.Visible then
-					local startHeight = element.Size.Y.Offset
-					local steps = 8
-					local stepTime = duration / steps
-					
-					for i = steps, 1, -1 do
-						element.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-						safeWait(stepTime)
+			-- Close ALL tabs
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") then
+					child.TextColor3 = Color3.new(255, 255, 255)
+					local arrow = child:FindFirstChild("Arrow")
+					if arrow then
+						arrow.TextColor3 = Color3.new(255, 255, 255)
 					end
-					element.Visible = false
-					element.Size = UDim2.new(0, 193, 0, 0)
-				end
-				
-				if element:IsA("TextButton") and element.Parent == Container then
-					element.TextColor3 = currentSettings.TextColor
-					if element:FindFirstChild("Arrow") then
-						element.Arrow.TextColor3 = currentSettings.TextColor
+					local tabContainer = child:FindFirstChild("TabContainer")
+					if tabContainer then
+						tabContainer.Visible = false
 					end
 				end
 			end
 			
-			if not isCurrentlyOpen then
-				TabContainer.Visible = true
-				TabContainer.Size = UDim2.new(0, 193, 0, 0)
-				
-				safeWait(0.01)
-				local targetHeight = UIListLayout2.AbsoluteContentSize.Y
-				local steps = 10
-				local stepTime = duration / steps
-				
-				for i = 1, steps do
-					TabContainer.Size = UDim2.new(0, 193, 0, (targetHeight / steps) * i)
-					safeWait(stepTime)
-				end
-				TabContainer.Size = UDim2.new(0, 193, 0, targetHeight)
-				
-				SettingsTab.TextColor3 = currentSettings.MainColor
-				Arrow.TextColor3 = currentSettings.MainColor
+			if not wasOpen then
+				SettingsContainer.Visible = true
+				SettingsTab.TextColor3 = UISettings.TextColor
+				SettingsTab.Arrow.TextColor3 = UISettings.TextColor
 			end
 		end)
 
-		-- Settings tab content
-		-- UI Theme Settings
-		local function createSettingsLabel(text, color)
-			local label = createInstance("TextLabel", {
-				Name = text,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..text,
-				TextColor3 = color or currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
-		end
+		-- UI Customization Settings
+		
+		-- Background Transparency
+		local transparencyToggle = SettingsContainer:FindFirstChild("Transparency") or Instance.new("TextButton")
+		transparencyToggle.Name = "Transparency"
+		transparencyToggle.Parent = SettingsContainer
+		transparencyToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		transparencyToggle.BackgroundTransparency = 1.000
+		transparencyToggle.Size = UDim2.new(0, 193, 0, 24)
+		transparencyToggle.Font = Enum.Font.JosefinSans
+		transparencyToggle.Text = " Transparency: "..UISettings.BackgroundTransparency
+		transparencyToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		transparencyToggle.TextSize = UISettings.TextSize
+		transparencyToggle.TextXAlignment = Enum.TextXAlignment.Left
+		
+		transparencyToggle.MouseButton1Down:Connect(function()
+			UISettings.BackgroundTransparency = UISettings.BackgroundTransparency == 0.5 and 0.2 or 0.5
+			transparencyToggle.Text = " Transparency: "..UISettings.BackgroundTransparency
+			applyUISettings()
+		end)
 
-		local function createSettingsButton(buttonText, note, callback)
-			local button = createInstance("TextButton", {
-				Name = buttonText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..buttonText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
+		-- Text Color
+		local colorOptions = {"Green", "Blue", "Red", "Yellow", "White"}
+		local colorMap = {
+			Green = Color3.fromRGB(0, 255, 0),
+			Blue = Color3.fromRGB(0, 150, 255),
+			Red = Color3.fromRGB(255, 50, 50),
+			Yellow = Color3.fromRGB(255, 255, 0),
+			White = Color3.fromRGB(255, 255, 255)
+		}
+		
+		local currentColor = "Green"
+		local colorToggle = SettingsContainer:FindFirstChild("Text Color") or Instance.new("TextButton")
+		colorToggle.Name = "Text Color"
+		colorToggle.Parent = SettingsContainer
+		colorToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		colorToggle.BackgroundTransparency = 1.000
+		colorToggle.Size = UDim2.new(0, 193, 0, 24)
+		colorToggle.Font = Enum.Font.JosefinSans
+		colorToggle.Text = " Text Color: "..currentColor
+		colorToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		colorToggle.TextSize = UISettings.TextSize
+		colorToggle.TextXAlignment = Enum.TextXAlignment.Left
+		
+		colorToggle.MouseButton1Down:Connect(function()
+			local currentIndex = table.find(colorOptions, currentColor) or 1
+			local nextIndex = (currentIndex % #colorOptions) + 1
+			currentColor = colorOptions[nextIndex]
+			UISettings.TextColor = colorMap[currentColor]
+			colorToggle.Text = " Text Color: "..currentColor
+			colorToggle.TextColor3 = UISettings.TextColor
+			applyUISettings()
+		end)
 
-			local noteLabel = createInstance("TextLabel", {
-				Name = "Note",
-				Parent = button,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(1.04145074, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = note or "",
-				TextColor3 = currentSettings.MainColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left,
-				Visible = false
-			})
+		-- Text Size
+		local sizeToggle = SettingsContainer:FindFirstChild("Text Size") or Instance.new("TextButton")
+		sizeToggle.Name = "Text Size"
+		sizeToggle.Parent = SettingsContainer
+		sizeToggle.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		sizeToggle.BackgroundTransparency = 1.000
+		sizeToggle.Size = UDim2.new(0, 193, 0, 24)
+		sizeToggle.Font = Enum.Font.JosefinSans
+		sizeToggle.Text = " Text Size: "..UISettings.TextSize
+		sizeToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+		sizeToggle.TextSize = UISettings.TextSize
+		sizeToggle.TextXAlignment = Enum.TextXAlignment.Left
+		
+		sizeToggle.MouseButton1Down:Connect(function()
+			UISettings.TextSize = UISettings.TextSize == 14 and 16 or 14
+			sizeToggle.Text = " Text Size: "..UISettings.TextSize
+			sizeToggle.TextSize = UISettings.TextSize
+			applyUISettings()
+		end)
+
+		-- Reset to Default
+		local resetBtn = SettingsContainer:FindFirstChild("Reset Defaults") or Instance.new("TextButton")
+		resetBtn.Name = "Reset Defaults"
+		resetBtn.Parent = SettingsContainer
+		resetBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		resetBtn.BackgroundTransparency = 1.000
+		resetBtn.Size = UDim2.new(0, 193, 0, 24)
+		resetBtn.Font = Enum.Font.JosefinSans
+		resetBtn.Text = " Reset to Defaults"
+		resetBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		resetBtn.TextSize = UISettings.TextSize
+		resetBtn.TextXAlignment = Enum.TextXAlignment.Left
+		
+		resetBtn.MouseButton1Down:Connect(function()
+			UISettings.BackgroundTransparency = 0.5
+			UISettings.TextColor = Color3.fromRGB(0, 255, 0)
+			UISettings.TextSize = 14
+			currentColor = "Green"
 			
-			button.MouseButton1Down:Connect(function()
-				button.TextColor3 = currentSettings.MainColor
-				safeWait(0.05)
-				button.TextColor3 = currentSettings.TextColor
-				if callback then
-					pcall(callback)
-				end
-			end)
-
-			button.MouseEnter:Connect(function()
-				noteLabel.Visible = true
-			end)
-
-			button.MouseLeave:Connect(function()
-				noteLabel.Visible = false
-			end)
-		end
-
-		local function createSettingsDropdown(dropText, list, callback)
-			local sideDrop = createInstance("TextButton", {
-				Name = dropText,
-				Parent = TabContainer,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = 1.000,
-				Size = UDim2.new(0, 193, 0, 24),
-				Font = currentSettings.Font,
-				Text = " "..dropText,
-				TextColor3 = currentSettings.TextColor,
-				TextSize = currentSettings.TextSize,
-				TextXAlignment = Enum.TextXAlignment.Left
-			})
-
-			local dropArrow = createInstance("TextButton", {
-				Name = "Arrow",
-				Parent = sideDrop,
-				BackgroundColor3 = Color3.fromRGB(255, 255, 255),
-				BackgroundTransparency = 1.000,
-				Position = UDim2.new(0.906735778, 0, 0, 0),
-				Size = UDim2.new(0, 18, 0, 21),
-				Font = Enum.Font.SourceSans,
-				Text = ">>",
-				TextColor3 = currentSettings.TextColor,
-				TextScaled = true,
-				TextSize = 14.000,
-				TextWrapped = true
-			})
-
-			local dropContainer = createInstance("Frame", {
-				Name = "DropContainer",
-				Parent = sideDrop,
-				BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-				BackgroundTransparency = currentSettings.BackgroundTransparency,
-				BorderColor3 = Color3.fromRGB(0, 0, 0),
-				BorderSizePixel = 4,
-				Position = UDim2.new(1.08290148, 0, 0, 0),
-				Size = UDim2.new(0, 193, 0, 0),
-				Visible = false
-			})
-
-			local dropUIListLayout = createInstance("UIListLayout", {
-				Parent = dropContainer,
-				SortOrder = Enum.SortOrder.LayoutOrder
-			})
-
-			-- Dropdown toggle
-			sideDrop.MouseButton1Down:Connect(function()
-				local allDropContainers = TabContainer:GetDescendants()
-				local duration = currentSettings.AnimationSpeed
-				
-				for _, element in pairs(allDropContainers) do
-					if element.Name == "DropContainer" and element ~= dropContainer and element.Visible then
-						local startHeight = element.Size.Y.Offset
-						local steps = 6
-						local stepTime = duration / steps
-						
-						for i = steps, 1, -1 do
-							element.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-							safeWait(stepTime)
-						end
-						element.Visible = false
-						element.Size = UDim2.new(0, 193, 0, 0)
-						
-						if element.Parent:FindFirstChild("TextColor3") then
-							element.Parent.TextColor3 = currentSettings.TextColor
-						end
-						if element.Parent:FindFirstChild("Arrow") then
-							element.Parent.Arrow.TextColor3 = currentSettings.TextColor
-						end
-					end
-				end
-
-				if not dropContainer.Visible then
-					dropContainer.Visible = true
-					dropContainer.Size = UDim2.new(0, 193, 0, 0)
-					
-					safeWait(0.01)
-					local targetHeight = dropUIListLayout.AbsoluteContentSize.Y
-					local steps = 8
-					local stepTime = duration / steps
-					
-					for i = 1, steps do
-						dropContainer.Size = UDim2.new(0, 193, 0, (targetHeight / steps) * i)
-						safeWait(stepTime)
-					end
-					dropContainer.Size = UDim2.new(0, 193, 0, targetHeight)
-					
-					sideDrop.TextColor3 = currentSettings.MainColor
-					dropArrow.TextColor3 = currentSettings.MainColor
-				else
-					local startHeight = dropContainer.Size.Y.Offset
-					local steps = 6
-					local stepTime = duration / steps
-					
-					for i = steps, 1, -1 do
-						dropContainer.Size = UDim2.new(0, 193, 0, (startHeight / steps) * i)
-						safeWait(stepTime)
-					end
-					dropContainer.Visible = false
-					dropContainer.Size = UDim2.new(0, 193, 0, 0)
-					
-					sideDrop.TextColor3 = currentSettings.TextColor
-					dropArrow.TextColor3 = currentSettings.TextColor
-				end
-			end)
-
-			for _, option in pairs(list or {}) do
-				local button = createInstance("TextButton", {
-					Name = option,
-					Parent = dropContainer,
-					BackgroundColor3 = Color3.fromRGB(0, 0, 0),
-					BackgroundTransparency = 1.000,
-					Size = UDim2.new(0, 193, 0, 24),
-					Font = currentSettings.Font,
-					Text = " "..option,
-					TextColor3 = currentSettings.TextColor,
-					TextSize = currentSettings.TextSize,
-					TextXAlignment = Enum.TextXAlignment.Left
-				})
-
-				button.MouseButton1Down:Connect(function()
-					button.TextColor3 = currentSettings.MainColor
-					safeWait(0.05)
-					button.TextColor3 = currentSettings.TextColor
-					if callback then
-						pcall(callback, option)
-					end
-				end)
-			end
-
-			dropContainer.Size = UDim2.new(0, 193, 0, dropUIListLayout.AbsoluteContentSize.Y)
-		end
-
-		-- Add settings content
-		createSettingsLabel("UI Theme", currentSettings.MainColor)
-		
-		createSettingsDropdown("Main Color", {"Green", "Blue", "Red", "Yellow", "Purple", "Cyan", "White"}, function(color)
-			local colorMap = {
-				Green = Color3.fromRGB(0, 255, 0),
-				Blue = Color3.fromRGB(0, 100, 255),
-				Red = Color3.fromRGB(255, 0, 0),
-				Yellow = Color3.fromRGB(255, 255, 0),
-				Purple = Color3.fromRGB(180, 0, 255),
-				Cyan = Color3.fromRGB(0, 255, 255),
-				White = Color3.fromRGB(255, 255, 255)
-			}
-			currentSettings.MainColor = colorMap[color] or defaultSettings.MainColor
-			applySettings()
+			transparencyToggle.Text = " Transparency: "..UISettings.BackgroundTransparency
+			colorToggle.Text = " Text Color: "..currentColor
+			colorToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+			sizeToggle.Text = " Text Size: "..UISettings.TextSize
+			sizeToggle.TextSize = UISettings.TextSize
+			
+			applyUISettings()
 		end)
+
+		-- Destroy UI Button
+		local destroyBtn = SettingsContainer:FindFirstChild("Destroy UI") or Instance.new("TextButton")
+		destroyBtn.Name = "Destroy UI"
+		destroyBtn.Parent = SettingsContainer
+		destroyBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		destroyBtn.BackgroundTransparency = 1.000
+		destroyBtn.Size = UDim2.new(0, 193, 0, 24)
+		destroyBtn.Font = Enum.Font.JosefinSans
+		destroyBtn.Text = " DESTROY UI"
+		destroyBtn.TextColor3 = Color3.fromRGB(255, 50, 50)
+		destroyBtn.TextSize = UISettings.TextSize
+		destroyBtn.TextXAlignment = Enum.TextXAlignment.Left
 		
-		createSettingsDropdown("Background", {"50% Transparent", "25% Transparent", "75% Transparent", "Solid"}, function(transparency)
-			local transparencyMap = {
-				["50% Transparent"] = 0.5,
-				["25% Transparent"] = 0.25,
-				["75% Transparent"] = 0.75,
-				["Solid"] = 0
-			}
-			currentSettings.BackgroundTransparency = transparencyMap[transparency] or defaultSettings.BackgroundTransparency
-			applySettings()
-		end)
-		
-		createSettingsDropdown("Text Color", {"White", "Black", "Light Gray"}, function(textColor)
-			local colorMap = {
-				White = Color3.fromRGB(255, 255, 255),
-				Black = Color3.fromRGB(0, 0, 0),
-				["Light Gray"] = Color3.fromRGB(200, 200, 200)
-			}
-			currentSettings.TextColor = colorMap[textColor] or defaultSettings.TextColor
-			applySettings()
-		end)
-		
-		createSettingsDropdown("Font", {"JosefinSans", "SourceSans", "Gotham", "Code"}, function(font)
-			local fontMap = {
-				JosefinSans = Enum.Font.JosefinSans,
-				SourceSans = Enum.Font.SourceSans,
-				Gotham = Enum.Font.Gotham,
-				Code = Enum.Font.Code
-			}
-			currentSettings.Font = fontMap[font] or defaultSettings.Font
-			applySettings()
-		end)
-		
-		createSettingsDropdown("Animation Speed", {"Fast", "Medium", "Slow", "Instant"}, function(speed)
-			local speedMap = {
-				Fast = 0.15,
-				Medium = 0.3,
-				Slow = 0.5,
-				Instant = 0
-			}
-			currentSettings.AnimationSpeed = speedMap[speed] or defaultSettings.AnimationSpeed
-		end)
-		
-		createSettingsLabel("UI Controls", currentSettings.MainColor)
-		
-		createSettingsButton("Reset to Default", "Resets all UI settings", function()
-			for k, v in pairs(defaultSettings) do
-				currentSettings[k] = v
-			end
-			applySettings()
-		end)
-		
-		createSettingsButton("Destroy UI", "Permanently removes the UI", function()
+		destroyBtn.MouseButton1Down:Connect(function()
 			Rodus:Destroy()
 		end)
-		
-		createSettingsLabel("RightControl: Hide/Show", currentSettings.TextColor)
-		createSettingsLabel("Minimize: Collapse/Expand", currentSettings.TextColor)
 
-		TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
-		settingsTabCreated = true
+		-- Update container size
+		SettingsContainer.Size = UDim2.new(0, 193, 0, SettingsUIListLayout.AbsoluteContentSize.Y)
+		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
 	end
 
-	-- Create Settings tab after a short delay to ensure it's last
-	spawn(function()
-		safeWait(0.1)
-		createSettingsTab()
-		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
-	end)
+	-- Create settings tab immediately
+	createSettingsTab()
 
 	return uiFunctions
 end
