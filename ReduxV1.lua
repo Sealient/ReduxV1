@@ -555,7 +555,7 @@ function Rodus:CreateMain(title)
 			KeyLabel.TextSize = UISettings.TextSize
 			KeyLabel.TextXAlignment = Enum.TextXAlignment.Right
 
-			-- Listening indicator
+			-- Listening indicator (hidden by default)
 			ListeningLabel.Name = "ListeningLabel"
 			ListeningLabel.Parent = Keybind
 			ListeningLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
@@ -574,76 +574,113 @@ function Rodus:CreateMain(title)
 				KeyLabel.Text = tostring(currentKey.Name):gsub("^%l", string.upper)
 				ListeningLabel.Visible = false
 				KeyLabel.Visible = true
-				Keybind.TextColor3 = Color3.new(255, 255, 255)
 			end
 
-			-- Function to start listening for key press
-			local function startListening()
-				isListening = true
-				KeyLabel.Visible = false
-				ListeningLabel.Visible = true
-				Keybind.TextColor3 = UISettings.TextColor
+			-- Initialize
+			updateKeyDisplay()
 
-				local connection
-				connection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+			-- Keybind connection
+			local keybindConnection
+			local function connectKeybind()
+				if keybindConnection then
+					keybindConnection:Disconnect()
+				end
+
+				keybindConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
 					if gameProcessed then return end
 
-					if input.UserInputType == Enum.UserInputType.Keyboard then
-						currentKey = input.KeyCode
-						updateKeyDisplay()
-						isListening = false
-						connection:Disconnect()
-
+					if input.KeyCode == currentKey then
 						if callback then
-							pcall(callback, currentKey)
-						end
-					elseif input.UserInputType == Enum.UserInputType.MouseButton1 then
-						-- Cancel if clicking elsewhere
-						updateKeyDisplay()
-						isListening = false
-						connection:Disconnect()
-					end
-				end)
-
-				-- Cancel after 5 seconds if no key is pressed (using task.wait instead of delay)
-				task.spawn(function()
-					task.wait(5)
-					if isListening then
-						updateKeyDisplay()
-						isListening = false
-						if connection then
-							connection:Disconnect()
+							pcall(callback, true)
 						end
 					end
 				end)
 			end
 
-			-- Button click to start listening
+			-- Connect the keybind initially
+			connectKeybind()
+
+			-- Button click to change keybind
 			Keybind.MouseButton1Down:Connect(function()
 				if not isListening then
-					startListening()
-				end
-			end)
+					-- Start listening for new key
+					isListening = true
+					KeyLabel.Visible = false
+					ListeningLabel.Visible = true
+					Keybind.TextColor3 = UISettings.TextColor
 
-			-- Key detection for the actual toggle functionality
-			local keyConnection
-			keyConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
-				if gameProcessed then return end
+					-- Temporary connection to listen for new key
+					local tempConnection
+					tempConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+						if gameProcessed then return end
 
-				if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == currentKey then
-					-- This is where you'd trigger whatever the keybind is for
-					if callback then
-						pcall(callback, currentKey, true) -- Pass true to indicate it was triggered by key press
-					end
-				end
-			end)
+						-- Ignore mouse clicks for keybinds
+						if input.UserInputType == Enum.UserInputType.MouseButton1 or
+							input.UserInputType == Enum.UserInputType.MouseButton2 or
+							input.UserInputType == Enum.UserInputType.MouseButton3 then
+							return
+						end
 
-			-- Clean up connection when UI is destroyed
-			TabContainer.AncestryChanged:Connect(function()
-				if not TabContainer:IsDescendantOf(game) then
-					if keyConnection then
-						keyConnection:Disconnect()
-					end
+						-- Set new key
+						currentKey = input.KeyCode
+						isListening = false
+						updateKeyDisplay()
+						Keybind.TextColor3 = Color3.new(255, 255, 255)
+
+						-- Reconnect with new key
+						connectKeybind()
+
+						-- Disconnect temporary listener
+						if tempConnection then
+							tempConnection:Disconnect()
+						end
+
+						print("Keybind set to:", currentKey.Name)
+					end)
+
+					-- Cancel listening if clicked elsewhere or after 5 seconds
+					local cancelConnection
+					cancelConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+						if input.UserInputType == Enum.UserInputType.MouseButton1 and isListening then
+							-- Check if click was outside this keybind
+							local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+							local keybindAbsolutePos = Keybind.AbsolutePosition
+							local keybindAbsoluteSize = Keybind.AbsoluteSize
+
+							if mouse.X < keybindAbsolutePos.X or 
+								mouse.X > keybindAbsolutePos.X + keybindAbsoluteSize.X or
+								mouse.Y < keybindAbsolutePos.Y or 
+								mouse.Y > keybindAbsolutePos.Y + keybindAbsoluteSize.Y then
+
+								isListening = false
+								updateKeyDisplay()
+								Keybind.TextColor3 = Color3.new(255, 255, 255)
+
+								if tempConnection then
+									tempConnection:Disconnect()
+								end
+								if cancelConnection then
+									cancelConnection:Disconnect()
+								end
+							end
+						end
+					end)
+
+					-- Auto-cancel after 5 seconds
+					delay(5, function()
+						if isListening then
+							isListening = false
+							updateKeyDisplay()
+							Keybind.TextColor3 = Color3.new(255, 255, 255)
+
+							if tempConnection then
+								tempConnection:Disconnect()
+							end
+							if cancelConnection then
+								cancelConnection:Disconnect()
+							end
+						end
+					end)
 				end
 			end)
 
@@ -652,13 +689,11 @@ function Rodus:CreateMain(title)
 			return {
 				GetKey = function() return currentKey end,
 				SetKey = function(newKey)
-					currentKey = newKey or currentKey
+					currentKey = newKey
 					updateKeyDisplay()
-					if callback then
-						pcall(callback, currentKey)
-					end
+					connectKeybind()
 				end,
-				IsListening = function() return isListening end
+				GetKeyName = function() return tostring(currentKey.Name):gsub("^%l", string.upper) end
 			}
 		end
 
