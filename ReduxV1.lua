@@ -1507,8 +1507,8 @@ function Rodus:CreateMain(title)
 		discordLabel.Size = UDim2.new(0, 193, 0, 24)
 		discordLabel.Font = Enum.Font.JosefinSans
 		discordLabel.Text = " Discord: sealrl_"
-		discordLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
-		discordLabel.TextSize = UISettings.TextSize
+		discordLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Purple
+		discordLabel.TextSize = 12
 		discordLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		-- GitHub/Contact (in purple)
@@ -1519,9 +1519,9 @@ function Rodus:CreateMain(title)
 		githubLabel.BackgroundTransparency = 1.000
 		githubLabel.Size = UDim2.new(0, 193, 0, 24)
 		githubLabel.Font = Enum.Font.JosefinSans
-		githubLabel.Text = " GitHub: https://github.com/Sealient"
-		githubLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
-		githubLabel.TextSize = UISettings.TextSize
+		githubLabel.Text = " GitHub: Sealient"
+		githubLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Purple
+		githubLabel.TextSize = 12
 		githubLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		-- Inspo/Contact (in purple)
@@ -1533,8 +1533,8 @@ function Rodus:CreateMain(title)
 		InspoLabel.Size = UDim2.new(0, 193, 0, 24)
 		InspoLabel.Font = Enum.Font.JosefinSans
 		InspoLabel.Text = " Inspo by: Rodus UI"
-		InspoLabel.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
-		InspoLabel.TextSize = UISettings.TextSize
+		InspoLabel.TextColor3 = Color3.fromRGB(255, 255, 255)  -- Purple
+		InspoLabel.TextSize = 12
 		InspoLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 		-- Update container size
