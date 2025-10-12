@@ -1,6 +1,7 @@
 -- Rodus UI Library
 local Rodus = {}
 
+
 function Rodus:CreateMain(title)
 	local player = game.Players.LocalPlayer
 	local parent = player:WaitForChild("PlayerGui")
@@ -25,13 +26,7 @@ function Rodus:CreateMain(title)
 	-- ScreenGui Setup
 	Rodus.Name = tostring(title)
 	Rodus.Parent = parent
-	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Global
-	
-	-- Set high ZIndex for all main containers
-	Top.ZIndex = 1000
-	Title.ZIndex = 1001
-	Container.ZIndex = 1000
-	Minimize.ZIndex = 1001
+	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 	-- Top Frame
 	Top.Name = "Top"
@@ -132,6 +127,172 @@ function Rodus:CreateMain(title)
 	-- UI Functions
 	local uiFunctions = {}
 	local customTabs = {} -- Store custom tabs to maintain order
+	
+	-- Custom Cursor System
+	local cursorEnabled = false
+	local originalMouseBehavior
+	local CustomCursor = Instance.new("Frame")
+	local CursorDot = Instance.new("Frame")
+	local CursorRing = Instance.new("Frame")
+
+	-- Create custom cursor
+	CustomCursor.Name = "CustomCursor"
+	CustomCursor.Parent = Rodus
+	CustomCursor.BackgroundTransparency = 1
+	CustomCursor.Size = UDim2.new(1, 0, 1, 0)
+	CustomCursor.Visible = false
+	CustomCursor.ZIndex = 1000
+
+	-- Cursor ring
+	CursorRing.Name = "CursorRing"
+	CursorRing.Parent = CustomCursor
+	CursorRing.BackgroundColor3 = UISettings.TextColor
+	CursorRing.BackgroundTransparency = 0.3
+	CursorRing.BorderSizePixel = 0
+	CursorRing.Size = UDim2.new(0, 0, 0, 0)
+	CursorRing.Position = UDim2.new(0, -10, 0, -10)
+	CursorRing.ZIndex = 1001
+
+	-- Cursor dot
+	CursorDot.Name = "CursorDot"
+	CursorDot.Parent = CustomCursor
+	CursorDot.BackgroundColor3 = UISettings.TextColor
+	CursorDot.BorderSizePixel = 0
+	CursorDot.Size = UDim2.new(0, 4, 0, 4)
+	CursorDot.Position = UDim2.new(0, -2, 0, -2)
+	CursorDot.ZIndex = 1002
+
+	-- Make cursor circular
+	local ringCorner = Instance.new("UICorner")
+	ringCorner.CornerRadius = UDim.new(1, 0)
+	ringCorner.Parent = CursorRing
+
+	local dotCorner = Instance.new("UICorner")
+	dotCorner.CornerRadius = UDim.new(1, 0)
+	dotCorner.Parent = CursorDot
+
+	-- Function to toggle cursor
+	local function toggleCustomCursor()
+		local UserInputService = game:GetService("UserInputService")
+		local RunService = game:GetService("RunService")
+
+		if not cursorEnabled then
+			-- Enable custom cursor
+			cursorEnabled = true
+
+			-- Store original mouse behavior
+			originalMouseBehavior = UserInputService.MouseBehavior
+
+			-- Unlock mouse and keep it unlocked
+			UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+
+			-- Show custom cursor
+			CustomCursor.Visible = true
+
+			-- Hide original mouse icon
+			UserInputService.MouseIconEnabled = false
+
+			-- Continuously prevent mouse from re-locking
+			local preventRelockConnection
+			preventRelockConnection = RunService.Heartbeat:Connect(function()
+				if cursorEnabled and UserInputService.MouseBehavior ~= Enum.MouseBehavior.Default then
+					UserInputService.MouseBehavior = Enum.MouseBehavior.Default
+				end
+			end)
+
+			-- Store the connection so we can disconnect later
+			game:GetService("Players").LocalPlayer:SetAttribute("PreventRelockConnection", preventRelockConnection)
+
+			print("Custom cursor enabled - Mouse unlocked")
+
+		else
+			-- Disable custom cursor
+			cursorEnabled = false
+
+			-- Stop preventing re-lock
+			local preventRelockConnection = game:GetService("Players").LocalPlayer:GetAttribute("PreventRelockConnection")
+			if preventRelockConnection then
+				preventRelockConnection:Disconnect()
+				game:GetService("Players").LocalPlayer:SetAttribute("PreventRelockConnection", nil)
+			end
+
+			-- Restore original mouse behavior
+			if originalMouseBehavior then
+				UserInputService.MouseBehavior = originalMouseBehavior
+			else
+				UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
+			end
+
+			-- Hide custom cursor
+			CustomCursor.Visible = false
+
+			-- Show original mouse icon
+			UserInputService.MouseIconEnabled = true
+
+			print("Custom cursor disabled - Mouse restored")
+		end
+	end
+	
+	-- Prevent mouse re-locking on click
+	local clickConnection
+	clickConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+		if not cursorEnabled then return end
+
+		-- If it's a mouse click and cursor is enabled, prevent re-locking
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or
+			input.UserInputType == Enum.UserInputType.MouseButton2 or
+			input.UserInputType == Enum.UserInputType.MouseButton3 then
+
+			-- Small delay to ensure Roblox doesn't re-lock the mouse
+			spawn(function()
+				wait(0.01)
+				if cursorEnabled then
+					game:GetService("UserInputService").MouseBehavior = Enum.MouseBehavior.Default
+				end
+			end)
+		end
+	end)
+
+	-- Update cursor position
+	local function updateCursorPosition()
+		if not cursorEnabled then return end
+
+		local UserInputService = game:GetService("UserInputService")
+		local mouse = game:GetService("Players").LocalPlayer:GetMouse()
+
+		CustomCursor.Position = UDim2.new(0, mouse.X, 0, mouse.Y)
+	end
+
+	-- Connect mouse movement
+	game:GetService("RunService").RenderStepped:Connect(updateCursorPosition)
+
+	-- Add toggle keybind (Insert key by default)
+	local cursorKeybind = Enum.KeyCode.Insert
+	local keybindConnection
+
+	local function connectCursorKeybind()
+		if keybindConnection then
+			keybindConnection:Disconnect()
+		end
+
+		keybindConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+			if gameProcessed then return end
+
+			if input.KeyCode == cursorKeybind then
+				toggleCustomCursor()
+			end
+		end)
+	end
+
+	-- Connect the keybind initially
+	connectCursorKeybind()
+
+	-- Function to change cursor toggle key
+	local function setCursorKeybind(newKey)
+		cursorKeybind = newKey
+		connectCursorKeybind()
+		print("Cursor toggle key set to:", newKey.Name)
+	end
 
 	function uiFunctions:CreateTab(text)
 		local Tab = Instance.new("TextButton")
@@ -160,9 +321,6 @@ function Rodus:CreateMain(title)
 		Arrow.TextScaled = true
 		Arrow.TextSize = UISettings.TextSize
 		Arrow.TextWrapped = true
-		
-		Tab.ZIndex = 1000
-		Arrow.ZIndex = 1001
 
 		-- Update container size
 		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
@@ -177,7 +335,6 @@ function Rodus:CreateMain(title)
 		TabContainer.BorderSizePixel = 4
 		TabContainer.Position = UDim2.new(1.0569948, 0, 0, 0)
 		TabContainer.Visible = false
-		TabContainer.ZIndex = 1002
 
 		local UIListLayout2 = Instance.new("UIListLayout")
 		UIListLayout2.Parent = TabContainer
@@ -244,10 +401,6 @@ function Rodus:CreateMain(title)
 			Slider.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Slider.TextSize = UISettings.TextSize
 			Slider.TextXAlignment = Enum.TextXAlignment.Left
-			Slider.ZIndex = 1003
-			Arrow.ZIndex = 1004
-			ValueLabel.ZIndex = 1004
-			SliderContainer.ZIndex = 1005
 
 			-- Arrow
 			Arrow.Name = "Arrow"
@@ -309,12 +462,6 @@ function Rodus:CreateMain(title)
 			Track.BorderSizePixel = 0
 			Track.Position = UDim2.new(0.05, 0, 0.4, 0)
 			Track.Size = UDim2.new(0, 150, 0, 6)
-			Track.ZIndex = 1006
-			Fill.ZIndex = 1006
-			Thumb.ZIndex = 1007
-			MinLabel.ZIndex = 1006
-			MaxLabel.ZIndex = 1006
-			ValueInput.ZIndex = 1006
 
 			-- Fill
 			Fill.Name = "Fill"
@@ -539,7 +686,7 @@ function Rodus:CreateMain(title)
 				end
 			}
 		end
-
+		
 		function tabFunctions:CreateKeybind(buttonText, defaultKey, callback)
 			local Keybind = Instance.new("TextButton")
 			local KeyLabel = Instance.new("TextLabel")
@@ -561,9 +708,6 @@ function Rodus:CreateMain(title)
 			Keybind.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Keybind.TextSize = UISettings.TextSize
 			Keybind.TextXAlignment = Enum.TextXAlignment.Left
-			Keybind.ZIndex = 1003
-			KeyLabel.ZIndex = 1004
-			ListeningLabel.ZIndex = 1004
 
 			-- Key display label
 			KeyLabel.Name = "KeyLabel"
@@ -740,10 +884,6 @@ function Rodus:CreateMain(title)
 			ColorPicker.TextColor3 = Color3.fromRGB(255, 255, 255)
 			ColorPicker.TextSize = UISettings.TextSize
 			ColorPicker.TextXAlignment = Enum.TextXAlignment.Left
-			ColorPicker.ZIndex = 1003
-			Arrow.ZIndex = 1004
-			ColorPreview.ZIndex = 1004
-			PickerContainer.ZIndex = 1005
 
 			-- Arrow
 			Arrow.Name = "Arrow"
@@ -795,13 +935,6 @@ function Rodus:CreateMain(title)
 			HueSlider.BorderSizePixel = 1
 			HueSlider.Position = UDim2.new(0.8, 0, 0.1, 0)
 			HueSlider.Size = UDim2.new(0, 15, 0, 60)
-			HueSlider.ZIndex = 1006
-			HueBar.ZIndex = 1006
-			HueSelector.ZIndex = 1007
-			SaturationBrightness.ZIndex = 1006
-			SaturationBrightnessSelector.ZIndex = 1007
-			CurrentColor.ZIndex = 1006
-			HexInput.ZIndex = 1006
 
 			-- Hue gradient
 			HueBar.Name = "HueBar"
@@ -1077,8 +1210,6 @@ function Rodus:CreateMain(title)
 			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Button.TextSize = UISettings.TextSize
 			Button.TextXAlignment = Enum.TextXAlignment.Left
-			Button.ZIndex = 1003
-			Note.ZIndex = 1004
 
 			Button.MouseButton1Down:Connect(function()
 				Button.TextColor3 = UISettings.TextColor
@@ -1127,7 +1258,6 @@ function Rodus:CreateMain(title)
 			Label.TextColor3 = color3 or Color3.fromRGB(255, 255, 255)
 			Label.TextSize = UISettings.TextSize
 			Label.TextXAlignment = Enum.TextXAlignment.Left
-			Label.ZIndex = 1003
 
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
 		end
@@ -1151,9 +1281,6 @@ function Rodus:CreateMain(title)
 			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Button.TextSize = UISettings.TextSize
 			Button.TextXAlignment = Enum.TextXAlignment.Left
-			Button.ZIndex = 1003
-			Note.ZIndex = 1004
-			Toggle.ZIndex = 1003
 
 			Button.MouseEnter:Connect(function()
 				if Note then
@@ -1213,10 +1340,6 @@ function Rodus:CreateMain(title)
 			SideDrop.TextColor3 = Color3.fromRGB(255, 255, 255)
 			SideDrop.TextSize = UISettings.TextSize
 			SideDrop.TextXAlignment = Enum.TextXAlignment.Left
-			SideDrop.ZIndex = 1003
-			Arrow.ZIndex = 1004
-			DropContainer.ZIndex = 1005
-			DropUIListLayout.ZIndex = 1005
 
 			Arrow.Name = "Arrow"
 			Arrow.Parent = SideDrop
@@ -1282,8 +1405,6 @@ function Rodus:CreateMain(title)
 				Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Button.TextSize = UISettings.TextSize
 				Button.TextXAlignment = Enum.TextXAlignment.Left
-				-- For dropdown buttons:
-				Button.ZIndex = 1006
 
 				Button.MouseButton1Down:Connect(function()
 					Button.TextColor3 = UISettings.TextColor
@@ -1465,6 +1586,44 @@ function Rodus:CreateMain(title)
 		end)
 
 		-- Credits and Information
+		
+		-- Cursor info
+		local cursorInfo = Instance.new("TextLabel")
+		cursorInfo.Name = "CursorInfo"
+		cursorInfo.Parent = InfoContainer
+		cursorInfo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		cursorInfo.BackgroundTransparency = 1.000
+		cursorInfo.Size = UDim2.new(0, 193, 0, 24)
+		cursorInfo.Font = Enum.Font.JosefinSans
+		cursorInfo.Text = " Cursor System"
+		cursorInfo.TextColor3 = Color3.fromRGB(128, 0, 128)  -- Purple
+		cursorInfo.TextSize = UISettings.TextSize
+		cursorInfo.TextXAlignment = Enum.TextXAlignment.Left
+
+		local cursorKeyInfo = Instance.new("TextLabel")
+		cursorKeyInfo.Name = "CursorKeyInfo"
+		cursorKeyInfo.Parent = InfoContainer
+		cursorKeyInfo.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		cursorKeyInfo.BackgroundTransparency = 1.000
+		cursorKeyInfo.Size = UDim2.new(0, 193, 0, 20)
+		cursorKeyInfo.Font = Enum.Font.JosefinSans
+		cursorKeyInfo.Text = " Insert: Toggle Cursor"
+		cursorKeyInfo.TextColor3 = Color3.fromRGB(255, 255, 255)
+		cursorKeyInfo.TextSize = 12
+		cursorKeyInfo.TextXAlignment = Enum.TextXAlignment.Left
+
+		local cursorDesc = Instance.new("TextLabel")
+		cursorDesc.Name = "CursorDesc"
+		cursorDesc.Parent = InfoContainer
+		cursorDesc.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		cursorDesc.BackgroundTransparency = 1.000
+		cursorDesc.Size = UDim2.new(0, 193, 0, 40)
+		cursorDesc.Font = Enum.Font.JosefinSans
+		cursorDesc.Text = " Unlocks mouse in first-person games. Press key again to relock."
+		cursorDesc.TextColor3 = Color3.fromRGB(200, 200, 200)
+		cursorDesc.TextSize = 10
+		cursorDesc.TextWrapped = true
+		cursorDesc.TextXAlignment = Enum.TextXAlignment.Left
 
 		-- Title
 		local titleLabel = Instance.new("TextLabel")
@@ -1662,6 +1821,115 @@ function Rodus:CreateMain(title)
 		end)
 
 		-- UI Customization Settings
+		-- Cursor Toggle Keybind
+		local cursorKeyButton = Instance.new("TextButton")
+		cursorKeyButton.Name = "Cursor Key"
+		cursorKeyButton.Parent = SettingsContainer
+		cursorKeyButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		cursorKeyButton.BackgroundTransparency = 1.000
+		cursorKeyButton.Size = UDim2.new(0, 193, 0, 24)
+		cursorKeyButton.Font = Enum.Font.JosefinSans
+		cursorKeyButton.Text = " Cursor Key: Insert"
+		cursorKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+		cursorKeyButton.TextSize = UISettings.TextSize
+		cursorKeyButton.TextXAlignment = Enum.TextXAlignment.Left
+
+		local isSettingCursorKey = false
+		cursorKeyButton.MouseButton1Down:Connect(function()
+			if not isSettingCursorKey then
+				isSettingCursorKey = true
+				cursorKeyButton.Text = " Press any key..."
+				cursorKeyButton.TextColor3 = Color3.fromRGB(255, 255, 0)
+
+				local tempConnection
+				tempConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gameProcessed)
+					if gameProcessed then return end
+
+					-- Ignore mouse clicks for keybinds
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or
+						input.UserInputType == Enum.UserInputType.MouseButton2 or
+						input.UserInputType == Enum.UserInputType.MouseButton3 then
+						return
+					end
+
+					setCursorKeybind(input.KeyCode)
+					cursorKeyButton.Text = " Cursor Key: " .. input.KeyCode.Name
+					cursorKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+					isSettingCursorKey = false
+
+					if tempConnection then
+						tempConnection:Disconnect()
+					end
+				end)
+
+				-- Auto-cancel after 5 seconds
+				delay(5, function()
+					if isSettingCursorKey then
+						isSettingCursorKey = false
+						cursorKeyButton.Text = " Cursor Key: " .. cursorKeybind.Name
+						cursorKeyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+
+						if tempConnection then
+							tempConnection:Disconnect()
+						end
+					end
+				end)
+			end
+		end)
+
+		-- Cursor Color
+		local cursorColorOptions = {"Green", "Blue", "Red", "Yellow", "White", "Purple"}
+		local cursorColorMap = {
+			Green = Color3.fromRGB(0, 255, 0),
+			Blue = Color3.fromRGB(0, 150, 255),
+			Red = Color3.fromRGB(255, 50, 50),
+			Yellow = Color3.fromRGB(255, 255, 0),
+			White = Color3.fromRGB(255, 255, 255),
+			Purple = Color3.fromRGB(128, 0, 128)
+		}
+
+		local currentCursorColor = "Green"
+		local cursorColorButton = Instance.new("TextButton")
+		cursorColorButton.Name = "Cursor Color"
+		cursorColorButton.Parent = SettingsContainer
+		cursorColorButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		cursorColorButton.BackgroundTransparency = 1.000
+		cursorColorButton.Size = UDim2.new(0, 193, 0, 24)
+		cursorColorButton.Font = Enum.Font.JosefinSans
+		cursorColorButton.Text = " Cursor Color: " .. currentCursorColor
+		cursorColorButton.TextColor3 = cursorColorMap[currentCursorColor]
+		cursorColorButton.TextSize = UISettings.TextSize
+		cursorColorButton.TextXAlignment = Enum.TextXAlignment.Left
+
+		cursorColorButton.MouseButton1Down:Connect(function()
+			local currentIndex = table.find(cursorColorOptions, currentCursorColor) or 1
+			local nextIndex = (currentIndex % #cursorColorOptions) + 1
+			currentCursorColor = cursorColorOptions[nextIndex]
+
+			cursorColorButton.Text = " Cursor Color: " .. currentCursorColor
+			cursorColorButton.TextColor3 = cursorColorMap[currentCursorColor]
+
+			-- Update cursor colors
+			CursorRing.BackgroundColor3 = cursorColorMap[currentCursorColor]
+			CursorDot.BackgroundColor3 = cursorColorMap[currentCursorColor]
+		end)
+
+		-- Test Cursor Button
+		local testCursorButton = Instance.new("TextButton")
+		testCursorButton.Name = "Test Cursor"
+		testCursorButton.Parent = SettingsContainer
+		testCursorButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+		testCursorButton.BackgroundTransparency = 1.000
+		testCursorButton.Size = UDim2.new(0, 193, 0, 24)
+		testCursorButton.Font = Enum.Font.JosefinSans
+		testCursorButton.Text = " Test Cursor Toggle"
+		testCursorButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+		testCursorButton.TextSize = UISettings.TextSize
+		testCursorButton.TextXAlignment = Enum.TextXAlignment.Left
+
+		testCursorButton.MouseButton1Down:Connect(function()
+			toggleCustomCursor()
+		end)
 
 		-- Background Transparency
 		local transparencyToggle = SettingsContainer:FindFirstChild("Transparency") or Instance.new("TextButton")
@@ -1787,6 +2055,27 @@ function Rodus:CreateMain(title)
 
 	-- Create settings tab immediately
 	createSettingsTab()
+	
+	-- Make sure to clean up when UI is destroyed
+	Rodus.Destroying:Connect(function()
+		if cursorEnabled then
+			-- Stop preventing re-lock
+			local preventRelockConnection = game:GetService("Players").LocalPlayer:GetAttribute("PreventRelockConnection")
+			if preventRelockConnection then
+				preventRelockConnection:Disconnect()
+			end
+
+			-- Disconnect click handler
+			if clickConnection then
+				clickConnection:Disconnect()
+			end
+
+			-- Restore mouse behavior
+			if originalMouseBehavior then
+				game:GetService("UserInputService").MouseBehavior = originalMouseBehavior
+			end
+		end
+	end)
 
 	return uiFunctions
 end
