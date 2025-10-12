@@ -182,7 +182,6 @@ function Rodus:CreateMain(title)
 		local UIListLayout2 = Instance.new("UIListLayout")
 		UIListLayout2.Parent = TabContainer
 		UIListLayout2.SortOrder = Enum.SortOrder.LayoutOrder
-		UIListLayout2.ZIndex = 1002
 
 		-- Tab click functionality
 		Tab.MouseButton1Down:Connect(function()
