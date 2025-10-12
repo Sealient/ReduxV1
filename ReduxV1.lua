@@ -31,7 +31,6 @@ function Rodus:CreateMain(title)
 	Top.ZIndex = 1000
 	Title.ZIndex = 1001
 	Container.ZIndex = 1000
-	UIListLayout.ZIndex = 1000
 	Minimize.ZIndex = 1001
 
 	-- Top Frame
