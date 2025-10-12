@@ -25,7 +25,14 @@ function Rodus:CreateMain(title)
 	-- ScreenGui Setup
 	Rodus.Name = tostring(title)
 	Rodus.Parent = parent
-	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Global
+	
+	-- Set high ZIndex for all main containers
+	Top.ZIndex = 1000
+	Title.ZIndex = 1001
+	Container.ZIndex = 1000
+	UIListLayout.ZIndex = 1000
+	Minimize.ZIndex = 1001
 
 	-- Top Frame
 	Top.Name = "Top"
@@ -154,6 +161,9 @@ function Rodus:CreateMain(title)
 		Arrow.TextScaled = true
 		Arrow.TextSize = UISettings.TextSize
 		Arrow.TextWrapped = true
+		
+		Tab.ZIndex = 1000
+		Arrow.ZIndex = 1001
 
 		-- Update container size
 		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
@@ -168,10 +178,12 @@ function Rodus:CreateMain(title)
 		TabContainer.BorderSizePixel = 4
 		TabContainer.Position = UDim2.new(1.0569948, 0, 0, 0)
 		TabContainer.Visible = false
+		TabContainer.ZIndex = 1002
 
 		local UIListLayout2 = Instance.new("UIListLayout")
 		UIListLayout2.Parent = TabContainer
 		UIListLayout2.SortOrder = Enum.SortOrder.LayoutOrder
+		UIListLayout2.ZIndex = 1002
 
 		-- Tab click functionality
 		Tab.MouseButton1Down:Connect(function()
@@ -234,6 +246,10 @@ function Rodus:CreateMain(title)
 			Slider.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Slider.TextSize = UISettings.TextSize
 			Slider.TextXAlignment = Enum.TextXAlignment.Left
+			Slider.ZIndex = 1003
+			Arrow.ZIndex = 1004
+			ValueLabel.ZIndex = 1004
+			SliderContainer.ZIndex = 1005
 
 			-- Arrow
 			Arrow.Name = "Arrow"
@@ -295,6 +311,12 @@ function Rodus:CreateMain(title)
 			Track.BorderSizePixel = 0
 			Track.Position = UDim2.new(0.05, 0, 0.4, 0)
 			Track.Size = UDim2.new(0, 150, 0, 6)
+			Track.ZIndex = 1006
+			Fill.ZIndex = 1006
+			Thumb.ZIndex = 1007
+			MinLabel.ZIndex = 1006
+			MaxLabel.ZIndex = 1006
+			ValueInput.ZIndex = 1006
 
 			-- Fill
 			Fill.Name = "Fill"
@@ -519,7 +541,7 @@ function Rodus:CreateMain(title)
 				end
 			}
 		end
-		
+
 		function tabFunctions:CreateKeybind(buttonText, defaultKey, callback)
 			local Keybind = Instance.new("TextButton")
 			local KeyLabel = Instance.new("TextLabel")
@@ -541,6 +563,9 @@ function Rodus:CreateMain(title)
 			Keybind.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Keybind.TextSize = UISettings.TextSize
 			Keybind.TextXAlignment = Enum.TextXAlignment.Left
+			Keybind.ZIndex = 1003
+			KeyLabel.ZIndex = 1004
+			ListeningLabel.ZIndex = 1004
 
 			-- Key display label
 			KeyLabel.Name = "KeyLabel"
@@ -717,6 +742,10 @@ function Rodus:CreateMain(title)
 			ColorPicker.TextColor3 = Color3.fromRGB(255, 255, 255)
 			ColorPicker.TextSize = UISettings.TextSize
 			ColorPicker.TextXAlignment = Enum.TextXAlignment.Left
+			ColorPicker.ZIndex = 1003
+			Arrow.ZIndex = 1004
+			ColorPreview.ZIndex = 1004
+			PickerContainer.ZIndex = 1005
 
 			-- Arrow
 			Arrow.Name = "Arrow"
@@ -768,6 +797,13 @@ function Rodus:CreateMain(title)
 			HueSlider.BorderSizePixel = 1
 			HueSlider.Position = UDim2.new(0.8, 0, 0.1, 0)
 			HueSlider.Size = UDim2.new(0, 15, 0, 60)
+			HueSlider.ZIndex = 1006
+			HueBar.ZIndex = 1006
+			HueSelector.ZIndex = 1007
+			SaturationBrightness.ZIndex = 1006
+			SaturationBrightnessSelector.ZIndex = 1007
+			CurrentColor.ZIndex = 1006
+			HexInput.ZIndex = 1006
 
 			-- Hue gradient
 			HueBar.Name = "HueBar"
@@ -1043,6 +1079,8 @@ function Rodus:CreateMain(title)
 			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Button.TextSize = UISettings.TextSize
 			Button.TextXAlignment = Enum.TextXAlignment.Left
+			Button.ZIndex = 1003
+			Note.ZIndex = 1004
 
 			Button.MouseButton1Down:Connect(function()
 				Button.TextColor3 = UISettings.TextColor
@@ -1091,6 +1129,7 @@ function Rodus:CreateMain(title)
 			Label.TextColor3 = color3 or Color3.fromRGB(255, 255, 255)
 			Label.TextSize = UISettings.TextSize
 			Label.TextXAlignment = Enum.TextXAlignment.Left
+			Label.ZIndex = 1003
 
 			TabContainer.Size = UDim2.new(0, 193, 0, UIListLayout2.AbsoluteContentSize.Y)
 		end
@@ -1114,6 +1153,9 @@ function Rodus:CreateMain(title)
 			Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 			Button.TextSize = UISettings.TextSize
 			Button.TextXAlignment = Enum.TextXAlignment.Left
+			Button.ZIndex = 1003
+			Note.ZIndex = 1004
+			Toggle.ZIndex = 1003
 
 			Button.MouseEnter:Connect(function()
 				if Note then
@@ -1173,6 +1215,10 @@ function Rodus:CreateMain(title)
 			SideDrop.TextColor3 = Color3.fromRGB(255, 255, 255)
 			SideDrop.TextSize = UISettings.TextSize
 			SideDrop.TextXAlignment = Enum.TextXAlignment.Left
+			SideDrop.ZIndex = 1003
+			Arrow.ZIndex = 1004
+			DropContainer.ZIndex = 1005
+			DropUIListLayout.ZIndex = 1005
 
 			Arrow.Name = "Arrow"
 			Arrow.Parent = SideDrop
@@ -1238,6 +1284,8 @@ function Rodus:CreateMain(title)
 				Button.TextColor3 = Color3.fromRGB(255, 255, 255)
 				Button.TextSize = UISettings.TextSize
 				Button.TextXAlignment = Enum.TextXAlignment.Left
+				-- For dropdown buttons:
+				Button.ZIndex = 1006
 
 				Button.MouseButton1Down:Connect(function()
 					Button.TextColor3 = UISettings.TextColor
