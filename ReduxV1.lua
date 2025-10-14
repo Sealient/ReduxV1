@@ -28,78 +28,6 @@ function Rodus:CreateMain(title)
 	Rodus.Parent = parent
 	Rodus.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
-	-- Tab Container scrolling system
-	local function setupTabScrolling(tabContainer, uiListLayout)
-		local function updateTabScrolling()
-			local absoluteSize = tabContainer.AbsoluteSize.Y
-			local contentSize = uiListLayout.AbsoluteContentSize.Y
-
-			print("Tab Container Size:", absoluteSize, "Content Size:", contentSize)
-
-			if contentSize > absoluteSize then
-				-- Enable scrolling
-				if not tabContainer:FindFirstChild("TabScrollingFrame") then
-					local ScrollingFrame = Instance.new("ScrollingFrame")
-					local ScrollingUIListLayout = Instance.new("UIListLayout")
-
-					ScrollingFrame.Name = "TabScrollingFrame"
-					ScrollingFrame.Parent = tabContainer
-					ScrollingFrame.BackgroundTransparency = 1
-					ScrollingFrame.BorderSizePixel = 0
-					ScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
-					ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, contentSize)
-					ScrollingFrame.ScrollBarThickness = 6
-					ScrollingFrame.ScrollBarImageColor3 = UISettings.TextColor
-					ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
-					ScrollingFrame.VerticalScrollBarInset = Enum.ScrollBarInset.Always
-					ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
-					ScrollingFrame.ScrollBarImageTransparency = 0.5
-
-					ScrollingUIListLayout.Parent = ScrollingFrame
-					ScrollingUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-					-- Move all existing elements to the scrolling frame
-					for _, child in pairs(tabContainer:GetChildren()) do
-						if child:IsA("TextButton") or child:IsA("TextLabel") and child.Name ~= "TabScrollingFrame" then
-							child.Parent = ScrollingFrame
-						end
-					end
-
-					-- Update scrolling when content changes
-					ScrollingUIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-						ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, ScrollingUIListLayout.AbsoluteContentSize.Y)
-					end)
-
-					print("Scrollbar added to tab container!")
-				end
-			else
-				-- Disable scrolling if not needed
-				local ScrollingFrame = tabContainer:FindFirstChild("TabScrollingFrame")
-				if ScrollingFrame then
-					-- Move all elements back to main tab container
-					for _, child in pairs(ScrollingFrame:GetChildren()) do
-						if child:IsA("TextButton") or child:IsA("TextLabel") then
-							child.Parent = tabContainer
-						end
-					end
-					ScrollingFrame:Destroy()
-					print("Scrollbar removed from tab container!")
-				end
-			end
-		end
-
-		-- Update scrolling when layout changes
-		uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateTabScrolling)
-
-		-- Also update when container size changes
-		tabContainer:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateTabScrolling)
-
-		-- Initial check
-		updateTabScrolling()
-
-		return updateTabScrolling
-	end
-
 	-- Top Frame
 	Top.Name = "Top"
 	Top.Parent = Rodus
@@ -569,6 +497,29 @@ function Rodus:CreateMain(title)
 			Button.MouseLeave:Connect(function()
 				Note.Visible = false
 			end)
+		end
+
+		function tabFunctions:CreateLabel(labelText, color3)
+			local Label = Instance.new("TextLabel")
+
+			Label.Name = labelText
+
+			-- Always add to the scrolling frame
+			local scrollingFrame = TabContainer:FindFirstChild("TabScrollingFrame")
+			if scrollingFrame then
+				Label.Parent = scrollingFrame
+			else
+				Label.Parent = TabContainer
+			end
+
+			Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+			Label.BackgroundTransparency = 1.000
+			Label.Size = UDim2.new(0, 193, 0, 24)
+			Label.Font = Enum.Font.JosefinSans
+			Label.Text = " "..labelText
+			Label.TextColor3 = color3 or Color3.fromRGB(255, 255, 255)
+			Label.TextSize = UISettings.TextSize
+			Label.TextXAlignment = Enum.TextXAlignment.Left
 		end
 
 		function tabFunctions:CreateSlider(buttonText, minValue, maxValue, defaultValue, callback)
@@ -1389,29 +1340,6 @@ function Rodus:CreateMain(title)
 			}
 		end
 
-		function tabFunctions:CreateLabel(labelText, color3)
-			local Label = Instance.new("TextLabel")
-
-			Label.Name = labelText
-
-			-- Always add to the scrolling frame
-			local scrollingFrame = TabContainer:FindFirstChild("TabScrollingFrame")
-			if scrollingFrame then
-				Label.Parent = scrollingFrame
-			else
-				Label.Parent = TabContainer
-			end
-
-			Label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-			Label.BackgroundTransparency = 1.000
-			Label.Size = UDim2.new(0, 193, 0, 24)
-			Label.Font = Enum.Font.JosefinSans
-			Label.Text = " "..labelText
-			Label.TextColor3 = color3 or Color3.fromRGB(255, 255, 255)
-			Label.TextSize = UISettings.TextSize
-			Label.TextXAlignment = Enum.TextXAlignment.Left
-		end
-
 		function tabFunctions:CreateToggle(buttonText, note, callback)
 			local Button = Instance.new("TextButton")
 			local Note = Instance.new("TextLabel")
@@ -1671,12 +1599,7 @@ function Rodus:CreateMain(title)
 		local Arrow = Instance.new("TextLabel")
 
 		InfoTab.Name = "Info"
-		local parent = Container
-		local ScrollingFrame = Container:FindFirstChild("ScrollingFrame")
-		if ScrollingFrame then
-			parent = ScrollingFrame
-		end
-		InfoTab.Parent = parent
+		InfoTab.Parent = Container
 		InfoTab.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		InfoTab.BackgroundTransparency = 1.000
 		InfoTab.Size = UDim2.new(0, 193, 0, 24)
@@ -1911,12 +1834,7 @@ function Rodus:CreateMain(title)
 		local Arrow = Instance.new("TextLabel")
 
 		SettingsTab.Name = "Settings"
-		local parent = Container
-		local ScrollingFrame = Container:FindFirstChild("ScrollingFrame")
-		if ScrollingFrame then
-			parent = ScrollingFrame
-		end
-		SettingsTab.Parent = parent
+		SettingsTab.Parent = Container
 		SettingsTab.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 		SettingsTab.BackgroundTransparency = 1.000
 		SettingsTab.Size = UDim2.new(0, 193, 0, 24)
