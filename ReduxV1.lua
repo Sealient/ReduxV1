@@ -60,9 +60,65 @@ function Rodus:CreateMain(title)
 	Container.BorderSizePixel = 4
 	Container.Position = UDim2.new(0, 0, 1.29629624, 0)
 	Container.Size = UDim2.new(0, 193, 0, 24)
+	Container.ClipsDescendants = true  -- Important: clip overflowing content
 
 	UIListLayout.Parent = Container
 	UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+	
+	-- Scrolling frame for when tabs overflow
+	local ScrollingFrame = Instance.new("ScrollingFrame")
+	local ScrollingUIListLayout = Instance.new("UIListLayout")
+
+	ScrollingFrame.Name = "ScrollingFrame"
+	ScrollingFrame.Parent = Container
+	ScrollingFrame.BackgroundTransparency = 1
+	ScrollingFrame.BorderSizePixel = 0
+	ScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+	ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+	ScrollingFrame.ScrollBarThickness = 4
+	ScrollingFrame.ScrollBarImageColor3 = UISettings.TextColor
+	ScrollingFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+	ScrollingFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y  -- Auto-expand height
+	ScrollingFrame.Visible = false  -- Hidden by default
+
+	ScrollingUIListLayout.Parent = ScrollingFrame
+	ScrollingUIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+	-- Function to check if we need scrolling
+	local function updateScrolling()
+		local totalHeight = UIListLayout.AbsoluteContentSize.Y
+		local containerHeight = Container.AbsoluteSize.Y
+
+		if totalHeight > containerHeight then
+			-- Enable scrolling
+			ScrollingFrame.Visible = true
+			ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+
+			-- Move all tabs to scrolling frame
+			for _, child in pairs(Container:GetChildren()) do
+				if child:IsA("TextButton") and child ~= ScrollingFrame then
+					child.Parent = ScrollingFrame
+				end
+			end
+		else
+			-- Disable scrolling
+			ScrollingFrame.Visible = false
+
+			-- Move all tabs back to main container
+			for _, child in pairs(ScrollingFrame:GetChildren()) do
+				if child:IsA("TextButton") then
+					child.Parent = Container
+				end
+			end
+		end
+	end
+
+	-- Update scrolling when layout changes
+	UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateScrolling)
+	ScrollingUIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateScrolling)
+
+	-- Also update when container size changes
+	Container:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateScrolling)
 
 	-- Minimize Button
 	Minimize.Name = "Minimize"
@@ -323,7 +379,8 @@ function Rodus:CreateMain(title)
 		Arrow.TextWrapped = true
 
 		-- Update container size
-		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
+		Container.Size = UDim2.new(0, 193, 0, math.min(UIListLayout.AbsoluteContentSize.Y, 200))  -- Max height of 200
+		updateScrolling()  -- Check if we need scrolling
 
 		-- Tab Container
 		local TabContainer = Instance.new("Frame")
@@ -1744,7 +1801,8 @@ function Rodus:CreateMain(title)
 
 		-- Update container size
 		InfoContainer.Size = UDim2.new(0, 193, 0, InfoUIListLayout.AbsoluteContentSize.Y)
-		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
+		Container.Size = UDim2.new(0, 193, 0, math.min(UIListLayout.AbsoluteContentSize.Y, 200))
+		updateScrolling()
 	end
 
 	-- Create info tab immediately (before settings)
@@ -2050,7 +2108,8 @@ function Rodus:CreateMain(title)
 
 		-- Update container size
 		SettingsContainer.Size = UDim2.new(0, 193, 0, SettingsUIListLayout.AbsoluteContentSize.Y)
-		Container.Size = UDim2.new(0, 193, 0, UIListLayout.AbsoluteContentSize.Y)
+		Container.Size = UDim2.new(0, 193, 0, math.min(UIListLayout.AbsoluteContentSize.Y, 200))
+		updateScrolling()
 	end
 
 	-- Create settings tab immediately
